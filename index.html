@@ -123,56 +123,51 @@
     font-family:var(--serif-en);font-style:italic;
     color:var(--ink-soft);font-size:16px;letter-spacing:.05em;
   }
-  .grid{
+  /* 卷目式章节索引 */
+  .chapter-list{border-top:1px solid var(--line)}
+  .chapter{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:1px;
-    background:var(--line);
-    border:1px solid var(--line);
+    grid-template-columns:76px minmax(140px,.38fr) 1fr auto;
+    align-items:center;gap:28px;
+    padding:30px 12px 28px;
+    border-bottom:1px solid var(--line);
+    color:inherit;text-decoration:none;
+    transition:background .35s ease,padding .35s ease;
   }
-  .card{
-    background:var(--paper);
-    padding:38px 30px 34px;
-    min-height:230px;
-    display:flex;flex-direction:column;
-    position:relative;
-    transition:background .35s ease;
+  .chapter .num{
+    display:flex;align-items:baseline;gap:8px;
+    color:var(--seal);font-size:20px;font-weight:600;
+    letter-spacing:.08em;white-space:nowrap;
   }
-  .card:hover{background:var(--paper-deep)}
-  .card .num{
-    font-family:var(--serif-en);font-style:italic;
-    font-size:15px;color:var(--seal);letter-spacing:.1em;
+  .chapter .num i{
+    font-family:var(--serif-en);font-size:13px;font-weight:400;
+    letter-spacing:.04em;
   }
-  .card h3{
-    font-size:24px;font-weight:600;letter-spacing:.3em;
-    margin:14px 0 12px;
+  .chapter h3{
+    font-size:clamp(26px,2.8vw,32px);font-weight:600;
+    letter-spacing:.28em;line-height:1.2;
   }
-  .card p{
-    font-size:14.5px;line-height:2;color:var(--ink-soft);
-    letter-spacing:.06em;
-    flex:1;
+  .chapter p{
+    font-size:14px;line-height:1.9;color:var(--ink-soft);
+    letter-spacing:.05em;
   }
-  .tag{
-    margin-top:22px;align-self:flex-start;
-    font-size:12px;letter-spacing:.3em;
-    color:var(--seal);
-    border:1px solid rgba(179,53,44,.4);
-    padding:5px 12px 5px 15px;
-    position:relative;
+  .chapter .go{
+    display:flex;align-items:center;gap:12px;
+    color:var(--seal);font-size:12px;letter-spacing:.26em;
+    white-space:nowrap;
   }
-  .tag::before{
-    content:"";position:absolute;left:6px;top:50%;
-    width:4px;height:4px;border-radius:50%;
-    background:var(--seal);
-    transform:translateY(-50%);
-    animation:breathe 2.4s ease-in-out infinite;
+  .chapter .go::after{
+    content:"→";font-family:var(--serif-en);font-size:20px;
+    line-height:1;transition:transform .35s ease;
   }
-  .tag.on{
-    background:var(--seal);color:var(--paper);border-color:var(--seal);
-    text-decoration:none;
-  }
-  .tag.on::before{background:var(--paper)}
-  @keyframes breathe{0%,100%{opacity:.25}50%{opacity:1}}
+  a.chapter:hover{background:rgba(33,29,25,.028);padding-left:22px}
+  a.chapter:hover .go::after{transform:translateX(5px)}
+  .chapter.pending{cursor:default}
+  .chapter.pending .num{color:var(--ink-soft);opacity:.6}
+  .chapter.pending h3{color:rgba(33,29,25,.38)}
+  .chapter.pending p{opacity:.68}
+  .chapter.pending .go{color:var(--ink-soft);opacity:.75}
+  .chapter.pending .go::after{content:""}
 
   footer{
     border-top:1px solid var(--line);
@@ -243,7 +238,13 @@
     .rise,.reveal{opacity:1;transform:none}
   }
   @media (max-width:820px){
-    .grid{grid-template-columns:1fr}
+    .chapters-head{flex-wrap:wrap;gap:10px 16px;margin-bottom:34px}
+    .chapter{grid-template-columns:52px 1fr auto;gap:14px;padding:24px 4px 22px}
+    .chapter .num{grid-column:1;grid-row:1;font-size:17px;flex-direction:column;gap:2px}
+    .chapter h3{grid-column:2;grid-row:1;font-size:25px}
+    .chapter p{grid-column:2/4;grid-row:2;font-size:13.5px;margin-top:-2px}
+    .chapter .go{grid-column:3;grid-row:1;justify-self:end;font-size:11px;letter-spacing:.18em;gap:6px}
+    a.chapter:hover{padding-left:8px}
     .frame{inset:8px}
     h1{margin-left:0}
     footer{flex-direction:column;align-items:flex-start}
@@ -286,37 +287,37 @@
       <h2>渐次落成</h2>
       <span>three rooms moved in</span>
     </div>
-    <div class="grid">
-      <article class="card">
-        <span class="num">壹 / I</span>
+    <div class="chapter-list">
+      <div class="chapter pending">
+        <span class="num">壹 <i>/ I</i></span>
         <h3>关于</h3>
         <p>一两句自我介绍，写删了七八回，还在斟酌。人先到，介绍随后。</p>
-        <span class="tag">待启</span>
-      </article>
-      <article class="card">
-        <span class="num">贰 / II</span>
+        <span class="go">待启</span>
+      </div>
+      <a class="chapter" href="sports.html">
+        <span class="num">贰 <i>/ II</i></span>
         <h3>运动</h3>
         <p>NBA、足球、电竞——中文比分与要闻，每半小时自动更新。</p>
-        <a class="tag on" href="sports.html">进入 →</a>
-      </article>
-      <article class="card">
-        <span class="num">叁 / III</span>
+        <span class="go">进入</span>
+      </a>
+      <a class="chapter" href="tech.html">
+        <span class="num">叁 <i>/ III</i></span>
         <h3>科技</h3>
         <p>IT之家、爱范儿、雷锋网、少数派——资讯流，每十五分钟更新。</p>
-        <a class="tag on" href="tech.html">进入 →</a>
-      </article>
-      <article class="card">
-        <span class="num">肆 / IV</span>
+        <span class="go">进入</span>
+      </a>
+      <a class="chapter" href="finance.html">
+        <span class="num">肆 <i>/ IV</i></span>
         <h3>财经</h3>
         <p>沪深港美七大指数与华尔街见闻快讯，红涨绿跌。</p>
-        <a class="tag on" href="finance.html">进入 →</a>
-      </article>
-      <article class="card">
-        <span class="num">伍 / V</span>
+        <span class="go">进入</span>
+      </a>
+      <div class="chapter pending">
+        <span class="num">伍 <i>/ V</i></span>
         <h3>项目</h3>
         <p>手头有几个小东西，还晾着。晾干了，挑两件像样的摆上来。</p>
-        <span class="tag">待启</span>
-      </article>
+        <span class="go">待启</span>
+      </div>
     </div>
   </section>
 
