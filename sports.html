@@ -113,9 +113,8 @@
   <div id="content"></div>
 
   <div class="foot">
-    数据源：ESPN 官方 API（NBA / 足球）、BBC Sport（足球资讯）、Riot lolesports（电竞）。<br>
-    每 30 分钟经 GitHub Actions 自动抓取更新，非逐秒直播；比分详情以
-    <a href="https://www.espn.com" target="_blank" rel="noopener">ESPN</a> 原站为准。
+    数据源：<a href="https://www.zhibo8.com" target="_blank" rel="noopener">直播吧</a>（赛程 · 比分 · 资讯），ESPN / BBC 备用。<br>
+    每 30 分钟经 GitHub Actions 自动抓取更新，非逐秒直播；详情以直播吧原页为准。
   </div>
 </main>
 
@@ -173,16 +172,16 @@ function newsList(items) {
 
 function renderNba(d) {
   if (!d) return `<div class="empty">源暂不可用</div>`;
-  const games = [...(d.games || [])].sort((a, b) =>
-    (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
-  const live = games.filter((g) => g.state === "in");
+  const live = d.games.filter((g) => g.state === "in");
+  const done = d.games.filter((g) => g.state === "post").sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+  const pre = d.games.filter((g) => g.state === "pre").sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
   const parts = [];
-  if (live.length) parts.push(`<div class="group-head"><h2>进行中</h2><span class="sub">live</span></div><div class="games">${live.map(gameCard).join("")}</div>`);
-  const rest = games.filter((g) => g.state !== "in");
-  if (rest.length) parts.push(`<div class="group-head"><h2>赛程与结果</h2><span class="sub">last night & today</span></div><div class="games">${rest.map(gameCard).join("")}</div>`);
-  else if (!live.length) parts.push(`<div class="empty">近两日无赛事</div>`);
-  if (d.news?.length) parts.push(`<div class="group-head"><h2>要闻</h2><span class="sub">via ESPN</span></div>` +
-    newsList(d.news.map((n) => ({ ...n, source: "ESPN" }))));
+  const card = (g) => gameCard({ ...g, league: "" }); // 本 tab 全为 NBA，卡内不再重复联赛名
+  if (live.length) parts.push(`<div class="group-head"><h2>进行中</h2><span class="sub">live</span></div><div class="games">${live.map(card).join("")}</div>`);
+  if (done.length) parts.push(`<div class="group-head"><h2>赛果</h2><span class="sub">近两日</span></div><div class="games">${done.map(card).join("")}</div>`);
+  if (pre.length) parts.push(`<div class="group-head"><h2>赛程</h2><span class="sub">即将开打</span></div><div class="games">${pre.map(card).join("")}</div>`);
+  if (!parts.length) parts.push(`<div class="empty">近期无赛事</div>`);
+  if (d.news?.length) parts.push(`<div class="group-head"><h2>要闻</h2><span class="sub">via ${esc(d.news[0]?.source || "")}</span></div>` + newsList(d.news));
   return parts.join("");
 }
 
@@ -194,20 +193,22 @@ function renderSoccer(d) {
       (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
     parts.push(`<div class="group-head"><h2>${esc(l.name)}</h2><span class="sub">${games.filter((g) => g.state === "in").length ? "● 直播中" : ""}</span></div><div class="games">${games.map((g) => gameCard({ ...g, league: "" })).join("")}</div>`);
   }
-  if (!parts.length) parts.push(`<div class="empty">近两日无赛事</div>`);
-  if (d.headlines?.length) parts.push(`<div class="group-head"><h2>头条</h2><span class="sub">via BBC Sport</span></div>` +
-    newsList(d.headlines.map((n) => ({ title: n.title, link: n.link, source: "BBC" }))));
+  if (!parts.length) parts.push(`<div class="empty">近期无赛事</div>`);
+  if (d.headlines?.length) parts.push(`<div class="group-head"><h2>头条</h2><span class="sub">via ${esc(d.headlines[0]?.source || "")}</span></div>` + newsList(d.headlines));
   return parts.join("");
 }
 
 function renderEsports(d) {
-  if (!d || !d.events?.length) {
-    const why = d?.source === "none" ? "电竞源待接入（可配 PandaScore）" : "源暂不可用";
-    return `<div class="empty">${why}</div>`;
+  if (!d) return `<div class="empty">源暂不可用</div>`;
+  const parts = [];
+  if (d.events?.length) {
+    const games = [...d.events].sort((a, b) =>
+      (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
+    parts.push(`<div class="group-head"><h2>赛程</h2><span class="sub">LOL · KPL · CS 等</span></div><div class="games">${games.map(gameCard).join("")}</div>`);
   }
-  const games = [...d.events].sort((a, b) =>
-    (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
-  return `<div class="games">${games.map(gameCard).join("")}</div>`;
+  if (d.news?.length) parts.push(`<div class="group-head"><h2>要闻</h2><span class="sub">via ${esc(d.news[0]?.source || "")}</span></div>` + newsList(d.news));
+  if (!parts.length) parts.push(`<div class="empty">近期无赛事</div>`);
+  return parts.join("");
 }
 
 const RENDER = { nba: renderNba, soccer: renderSoccer, esports: renderEsports };
