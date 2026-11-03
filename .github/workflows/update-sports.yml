@@ -1,0 +1,43 @@
+name: update-sports
+
+on:
+  schedule:
+    # 每 30 分钟（UTC，GitHub 定时任务自身可能有几分钟漂移）
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-sports
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch sports data
+        env:
+          # 可选：在仓库 Settings → Secrets 配置 PANDASCORE_TOKEN 后自动启用电竞 PandaScore 源
+          PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
+        run: node scripts/fetch-sports.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "sports-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/sports.json
+          if git diff --staged --quiet; then
+            echo "no changes"
+          else
+            git commit -m "chore: update sports data"
+            git push
+          fi

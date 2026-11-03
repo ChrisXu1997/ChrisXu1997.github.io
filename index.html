@@ -199,6 +199,11 @@
     transform:translateY(-50%);
     animation:breathe 2.4s ease-in-out infinite;
   }
+  .tag.on{
+    background:var(--seal);color:var(--paper);border-color:var(--seal);
+    text-decoration:none;
+  }
+  .tag.on::before{background:var(--paper)}
   @keyframes breathe{0%,100%{opacity:.25}50%{opacity:1}}
 
   footer{
@@ -256,7 +261,7 @@
   <section class="chapters reveal">
     <div class="chapters-head">
       <h2>将启三章</h2>
-      <span>three rooms, unfurnished</span>
+      <span>one room moved in</span>
     </div>
     <div class="grid">
       <article class="card">
@@ -267,9 +272,9 @@
       </article>
       <article class="card">
         <span class="num">贰 / II</span>
-        <h3>文章</h3>
-        <p>想写点东西，笔名还没想好。等第一篇落笔，这里就有了灯。</p>
-        <span class="tag">待启</span>
+        <h3>运动</h3>
+        <p>NBA、足球、电竞——比分与要闻，每半小时自动更新。</p>
+        <a class="tag on" href="sports.html">进入 →</a>
       </article>
       <article class="card">
         <span class="num">叁 / III</span>

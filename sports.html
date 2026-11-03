@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运动 · 留白</title>
+<meta name="description" content="NBA、足球、电竞：比分与资讯聚合。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23b3352c'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='%23f6f1e7' font-family='serif'%3E运%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f1e7; --paper-deep:#efe8d8;
+    --ink:#211d19; --ink-soft:#6f6558;
+    --seal:#b3352c; --line:rgba(33,29,25,.16);
+    --serif-cn:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",serif;
+    --serif-en:"Cormorant Garamond",Georgia,serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:var(--serif-cn);min-height:100vh}
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:5;
+    opacity:.5;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.52 0 0 0 0 0.45 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .frame{position:fixed;inset:14px;border:1px solid var(--line);pointer-events:none;z-index:4}
+  .frame::after{content:"";position:absolute;inset:5px;border:1px solid rgba(33,29,25,.08)}
+  main{position:relative;max-width:880px;margin:0 auto;padding:56px 6vw 80px}
+
+  /* 页头 */
+  .head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:8px}
+  .head h1{font-size:clamp(38px,7vw,64px);font-weight:900;letter-spacing:.12em;line-height:1}
+  .back{font-size:13px;letter-spacing:.2em;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px;transition:all .25s}
+  .back:hover{color:var(--seal);border-color:var(--seal)}
+  .meta{display:flex;align-items:center;gap:14px;font-size:12.5px;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:34px}
+  .meta .dot{width:6px;height:6px;border-radius:50%;background:var(--seal);animation:breathe 2.4s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.25}50%{opacity:1}}
+  .refresh{font-family:inherit;font-size:12.5px;letter-spacing:.2em;color:var(--ink);background:none;border:1px solid var(--line);padding:5px 14px;cursor:pointer;transition:all .25s}
+  .refresh:hover{border-color:var(--seal);color:var(--seal)}
+  .refresh:disabled{opacity:.5;cursor:wait}
+
+  /* tabs */
+  .tabs{display:flex;gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:40px;position:sticky;top:12px;z-index:3}
+  .tab{flex:1;background:var(--paper);border:none;font-family:inherit;font-size:16px;font-weight:600;letter-spacing:.4em;padding:15px 0 13px;cursor:pointer;color:var(--ink-soft);transition:all .25s;text-indent:.4em}
+  .tab.on{background:var(--ink);color:var(--paper)}
+  .tab:not(.on):hover{background:var(--paper-deep);color:var(--ink)}
+
+  /* 分组标题 */
+  .group-head{display:flex;align-items:baseline;gap:14px;margin:38px 0 18px}
+  .group-head h2{font-size:19px;font-weight:600;letter-spacing:.3em}
+  .group-head .sub{font-family:var(--serif-en);font-style:italic;font-size:14px;color:var(--ink-soft)}
+  .group-head::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* 比分卡 */
+  .games{display:flex;flex-direction:column;gap:12px}
+  .game{display:block;text-decoration:none;color:inherit;background:var(--paper);border:1px solid var(--line);padding:16px 20px;transition:all .25s;position:relative}
+  .game:hover{border-color:var(--ink);transform:translateX(4px)}
+  .game .league{font-size:11.5px;letter-spacing:.24em;color:var(--ink-soft);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .team{display:flex;align-items:center;gap:10px;padding:4px 0;font-size:16px;letter-spacing:.04em}
+  .team img{width:22px;height:22px;object-fit:contain;flex:none}
+  .team .name{flex:1}
+  .team .score{font-family:var(--serif-en);font-size:22px;font-weight:500;min-width:34px;text-align:right}
+  .team.win .score{color:var(--seal)}
+  .state{display:inline-flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.15em}
+  .state.in{color:var(--seal)}
+  .state.in::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--seal);animation:breathe 1.6s infinite}
+  .state.pre,.state.post{color:var(--ink-soft)}
+
+  /* 新闻 */
+  .news{display:flex;flex-direction:column}
+  .news a{display:block;padding:15px 4px;text-decoration:none;color:inherit;border-bottom:1px solid var(--line);transition:all .2s}
+  .news a:first-child{border-top:1px solid var(--line)}
+  .news a:hover{background:var(--paper-deep);padding-left:12px}
+  .news .t{font-size:15.5px;line-height:1.65;letter-spacing:.02em}
+  .news .s{font-size:12px;color:var(--ink-soft);letter-spacing:.12em;margin-top:5px}
+
+  .empty{padding:44px 0;text-align:center;color:var(--ink-soft);font-size:14px;letter-spacing:.24em;border:1px dashed var(--line)}
+  .foot{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);font-size:12px;line-height:2;letter-spacing:.12em;color:var(--ink-soft)}
+  .foot a{color:var(--ink-soft)}
+
+  .fade{animation:fade .4s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+  @media (max-width:600px){
+    main{padding:40px 5vw 60px}
+    .tabs{top:8px}
+    .game{padding:14px 14px}
+    .team{font-size:15px}
+  }
+</style>
+</head>
+<body>
+<div class="frame" aria-hidden="true"></div>
+
+<main>
+  <div class="head">
+    <h1>运动</h1>
+    <a class="back" href="index.html">← 返回留白</a>
+  </div>
+  <div class="meta">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="updated">数据加载中…</span>
+    <span style="flex:1"></span>
+    <button class="refresh" id="refresh" onclick="load(true)">刷新</button>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-tab="nba" role="tab">NBA</button>
+    <button class="tab" data-tab="soccer" role="tab">足球</button>
+    <button class="tab" data-tab="esports" role="tab">电竞</button>
+  </div>
+
+  <div id="content"></div>
+
+  <div class="foot">
+    数据源：ESPN 官方 API（NBA / 足球）、BBC Sport（足球资讯）、Riot lolesports（电竞）。<br>
+    每 30 分钟经 GitHub Actions 自动抓取更新，非逐秒直播；比分详情以
+    <a href="https://www.espn.com" target="_blank" rel="noopener">ESPN</a> 原站为准。
+  </div>
+</main>
+
+<script>
+const $ = (s, p = document) => p.querySelector(s);
+const content = $("#content");
+
+/* ── 时间格式化 ── */
+const dayFmt = new Intl.DateTimeFormat("zh-CN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false });
+const hmFmt = new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false });
+function dayLabel(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay = (a, b) => a.toDateString() === b.toDateString();
+  const yesterday = new Date(now - 864e5);
+  const prefix = sameDay(d, now) ? "今天 " : sameDay(d, yesterday) ? "昨天 " : "";
+  return prefix + dayFmt.format(d);
+}
+function timeAgo(iso) {
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 3600) return Math.max(1, s / 60 | 0) + " 分钟前";
+  if (s < 86400) return (s / 3600 | 0) + " 小时前";
+  return (s / 86400 | 0) + " 天前";
+}
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/* ── 渲染 ── */
+const STATE_ORDER = { in: 0, pre: 1, post: 2 };
+
+function gameCard(g) {
+  const stateCls = g.state;
+  const stateText = g.state === "post" ? "终" : g.state === "in" ? (g.detail || "进行中") : dayLabel(g.startTime);
+  const row = (t) => t ? `
+    <div class="team ${g.state === "post" && t.winner ? "win" : ""}">
+      <span class="name">${esc(t.name)}</span>
+      <span class="score">${g.state === "pre" ? "" : (t.score ?? "")}</span>
+    </div>` : "";
+  return `
+    <a class="game fade" href="${esc(g.link || "#")}" target="_blank" rel="noopener">
+      <div class="league">
+        <span>${esc(g.league || "")}${g.note ? " · " + esc(g.note) : ""}</span>
+        <span class="state ${stateCls}">${esc(stateText)}</span>
+      </div>
+      ${row(g.away)}${row(g.home)}
+    </a>`;
+}
+
+function newsList(items) {
+  return `<div class="news fade">` + items.map((n) => `
+    <a href="${esc(n.link || "#")}" target="_blank" rel="noopener">
+      <div class="t">${esc(n.title)}</div>
+      <div class="s">${esc(n.source || "")}${n.published ? " · " + timeAgo(n.published) : ""}</div>
+    </a>`).join("") + `</div>`;
+}
+
+function renderNba(d) {
+  if (!d) return `<div class="empty">源暂不可用</div>`;
+  const games = [...(d.games || [])].sort((a, b) =>
+    (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
+  const live = games.filter((g) => g.state === "in");
+  const parts = [];
+  if (live.length) parts.push(`<div class="group-head"><h2>进行中</h2><span class="sub">live</span></div><div class="games">${live.map(gameCard).join("")}</div>`);
+  const rest = games.filter((g) => g.state !== "in");
+  if (rest.length) parts.push(`<div class="group-head"><h2>赛程与结果</h2><span class="sub">last night & today</span></div><div class="games">${rest.map(gameCard).join("")}</div>`);
+  else if (!live.length) parts.push(`<div class="empty">近两日无赛事</div>`);
+  if (d.news?.length) parts.push(`<div class="group-head"><h2>要闻</h2><span class="sub">via ESPN</span></div>` +
+    newsList(d.news.map((n) => ({ ...n, source: "ESPN" }))));
+  return parts.join("");
+}
+
+function renderSoccer(d) {
+  if (!d) return `<div class="empty">源暂不可用</div>`;
+  const parts = [];
+  for (const l of d.leagues || []) {
+    const games = [...l.games].sort((a, b) =>
+      (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
+    parts.push(`<div class="group-head"><h2>${esc(l.name)}</h2><span class="sub">${games.filter((g) => g.state === "in").length ? "● 直播中" : ""}</span></div><div class="games">${games.map((g) => gameCard({ ...g, league: "" })).join("")}</div>`);
+  }
+  if (!parts.length) parts.push(`<div class="empty">近两日无赛事</div>`);
+  if (d.headlines?.length) parts.push(`<div class="group-head"><h2>头条</h2><span class="sub">via BBC Sport</span></div>` +
+    newsList(d.headlines.map((n) => ({ title: n.title, link: n.link, source: "BBC" }))));
+  return parts.join("");
+}
+
+function renderEsports(d) {
+  if (!d || !d.events?.length) {
+    const why = d?.source === "none" ? "电竞源待接入（可配 PandaScore）" : "源暂不可用";
+    return `<div class="empty">${why}</div>`;
+  }
+  const games = [...d.events].sort((a, b) =>
+    (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
+  return `<div class="games">${games.map(gameCard).join("")}</div>`;
+}
+
+const RENDER = { nba: renderNba, soccer: renderSoccer, esports: renderEsports };
+let data = null, tab = localStorage.getItem("sports-tab") || "nba";
+
+/* ── tabs ── */
+document.querySelectorAll(".tab").forEach((b) => {
+  b.onclick = () => {
+    tab = b.dataset.tab;
+    localStorage.setItem("sports-tab", tab);
+    paint();
+  };
+});
+function paint() {
+  document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
+  content.innerHTML = data ? RENDER[tab](data[tab]) : `<div class="empty">数据加载中…</div>`;
+}
+
+/* ── 数据 ── */
+async function load(manual) {
+  const btn = $("#refresh");
+  if (btn) { btn.disabled = true; btn.textContent = "刷新中"; }
+  try {
+    const res = await fetch(`data/sports.json?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(res.status);
+    data = await res.json();
+    const ts = data.updatedAt ? new Intl.DateTimeFormat("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(data.updatedAt)) : "—";
+    $("#updated").textContent = `更新于 ${ts}` + (manual ? "" : " · 每 5 分钟自动刷新");
+    paint();
+  } catch (e) {
+    $("#updated").textContent = "数据加载失败";
+    content.innerHTML = `<div class="empty">数据加载失败，稍后自动重试</div>`;
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "刷新"; }
+  }
+}
+
+load();
+setInterval(load, 5 * 60 * 1000);
+</script>
+</body>
+</html>
