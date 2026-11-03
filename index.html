@@ -83,27 +83,8 @@
     line-height:1.04;
     letter-spacing:.06em;
     margin:26px 0 10px -6px;
-    position:relative;
   }
   h1 .char{display:inline-block}
-  /* 印章：压在标题角落 */
-  .seal{
-    position:absolute;
-    right:max(2vw,8px);bottom:6px;
-    width:clamp(64px,7vw,88px);height:clamp(64px,7vw,88px);
-    background:var(--seal);
-    color:var(--paper);
-    display:flex;align-items:center;justify-content:center;
-    font-size:clamp(24px,2.6vw,32px);font-weight:600;
-    line-height:1.15;
-    writing-mode:vertical-rl;
-    letter-spacing:.14em;
-    transform:rotate(4deg);
-    box-shadow:0 6px 22px rgba(179,53,44,.28);
-    border-radius:6px;
-    transition:transform .45s cubic-bezier(.22,1.4,.36,1);
-  }
-  .seal:hover{transform:rotate(-3deg) scale(1.05)}
   .hero-sub{
     font-size:clamp(17px,2vw,21px);
     color:var(--ink);
@@ -208,11 +189,6 @@
   @keyframes rise{to{opacity:1;transform:none}}
   .d1{animation-delay:.15s}.d2{animation-delay:.3s}.d3{animation-delay:.5s}
   .d4{animation-delay:.7s}.d5{animation-delay:.9s}
-  .seal{opacity:0;animation:stamp .55s cubic-bezier(.34,1.56,.64,1) .95s forwards}
-  @keyframes stamp{
-    0%{opacity:0;transform:rotate(4deg) scale(1.6)}
-    100%{opacity:1;transform:rotate(4deg) scale(1)}
-  }
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s cubic-bezier(.19,1,.22,1)}
   .reveal.on{opacity:1;transform:none}
 
@@ -264,12 +240,11 @@
 
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none!important;transition:none!important}
-    .rise,.seal,.reveal{opacity:1;transform:none}
+    .rise,.reveal{opacity:1;transform:none}
   }
   @media (max-width:820px){
     .grid{grid-template-columns:1fr}
     .frame{inset:8px}
-    .seal{position:static;display:inline-flex;margin-top:18px;transform:rotate(-2deg)}
     h1{margin-left:0}
     footer{flex-direction:column;align-items:flex-start}
     /* 题签转横排名印 */
@@ -296,7 +271,6 @@
     <p class="eyebrow rise d1">二〇二六 · 冬 <em>soft launched</em></p>
     <h1>
       <span class="char rise d2">留</span><span class="char rise d3">白</span>
-      <span class="seal" aria-label="印章：留白">留白</span>
     </h1>
     <p class="hero-sub rise d4">网站先落座，内容在途中。</p>
     <p class="hero-en rise d5">Blank for now — on purpose.</p>
