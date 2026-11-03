@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: update-sports
+  group: data-update
   cancel-in-progress: false
 
 jobs:
@@ -38,6 +38,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "no changes"
           else
+            git pull --rebase --autostash
             git commit -m "chore: update sports data"
             git push
           fi
