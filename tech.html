@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23b3352c'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='%23f6f1e7' font-family='serif'%3E技%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#f6f1e7; --paper-deep:#efe8d8;
@@ -54,6 +54,7 @@
 
   .empty{padding:44px 0;text-align:center;color:var(--ink-soft);font-size:14px;letter-spacing:.24em;border:1px dashed var(--line)}
   .foot{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);font-size:12px;line-height:2;letter-spacing:.12em;color:var(--ink-soft)}
+  .foot .host{font-family:"Ma Shan Zheng",var(--serif-cn);color:var(--seal);font-size:15px;letter-spacing:.1em}
   .fade{animation:fade .4s ease}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
 </style>
@@ -77,6 +78,7 @@
   <div id="content"></div>
 
   <div class="foot">
+    <span class="host">展白 主理</span><br>
     数据源：IT之家、爱范儿、雷锋网、少数派（官方 RSS，按时间混排）。<br>
     每 15 分钟经 GitHub Actions 自动抓取更新；点击标题跳转原文。
   </div>
