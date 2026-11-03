@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资讯 · 留白</title>
+<meta name="description" content="运动、科技、财经，三流合一，一页速览。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23b3352c'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='%23f6f1e7' font-family='serif'%3E讯%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f1e7;--paper-deep:#efe8d8;--ink:#211d19;--ink-soft:#6f6558;
+    --seal:#b3352c;--line:rgba(33,29,25,.16);--up:#b3352c;--down:#2e7d32;
+    --serif-cn:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",serif;
+    --serif-en:"Cormorant Garamond",Georgia,serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:var(--serif-cn);min-height:100vh}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.5;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.52 0 0 0 0 0.45 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .frame{position:fixed;inset:14px;border:1px solid var(--line);pointer-events:none;z-index:4}
+  .frame::after{content:"";position:absolute;inset:5px;border:1px solid rgba(33,29,25,.08)}
+  main{position:relative;max-width:1240px;margin:0 auto;padding:58px 5vw 76px}
+  .topline{display:flex;align-items:center;gap:16px;font-size:12px;letter-spacing:.3em;color:var(--ink-soft)}
+  .topline::before{content:"";width:40px;height:1px;background:var(--seal)}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:18px 0 12px}
+  h1{font-size:clamp(48px,7vw,76px);font-weight:900;letter-spacing:.14em;line-height:1}
+  .back{font-size:13px;letter-spacing:.2em;color:var(--ink-soft);text-decoration:none;padding-bottom:5px;border-bottom:1px solid transparent;transition:all .25s;white-space:nowrap}
+  .back:hover{color:var(--seal);border-color:var(--seal)}
+  .dateline{font-family:var(--serif-en);font-style:italic;font-size:17px;color:var(--ink-soft);letter-spacing:.04em}
+  .meta{display:flex;align-items:center;gap:12px;margin:28px 0 38px;font-size:12px;letter-spacing:.12em;color:var(--ink-soft)}
+  .meta .dot{width:5px;height:5px;border-radius:50%;background:var(--seal);animation:breathe 2.4s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.25}50%{opacity:1}}
+  .refresh{margin-left:auto;font-family:inherit;font-size:12px;letter-spacing:.2em;color:var(--ink);background:none;border:1px solid var(--line);padding:5px 14px;cursor:pointer;transition:all .25s}
+  .refresh:hover{border-color:var(--seal);color:var(--seal)}
+  .refresh:disabled{opacity:.5;cursor:wait}
+
+  .digest-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--line)}
+  .stream{min-width:0;padding:30px 32px 34px;border-left:1px solid var(--line)}
+  .stream:first-child{border-left:0;padding-left:0}
+  .stream:last-child{padding-right:0}
+  .stream-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .stream-head .no{font-family:var(--serif-en);font-style:italic;font-size:14px;color:var(--seal)}
+  .stream-head h2{font-size:26px;font-weight:600;letter-spacing:.26em}
+  .stream-head .all{margin-left:auto;color:var(--seal);font-size:11px;letter-spacing:.18em;text-decoration:none;white-space:nowrap}
+  .stream-head .all:hover{text-decoration:underline;text-underline-offset:4px}
+  .stream-sub{font-family:var(--serif-en);font-style:italic;color:var(--ink-soft);font-size:14px;margin-bottom:20px}
+  .subhead{display:flex;align-items:center;gap:12px;margin:24px 0 6px;font-size:11px;letter-spacing:.26em;color:var(--ink-soft)}
+  .subhead::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .match{display:block;color:inherit;text-decoration:none;padding:13px 0;border-bottom:1px solid var(--line);transition:padding .25s,background .25s}
+  a.match:hover{padding-left:8px;background:var(--paper-deep)}
+  .match-top{display:flex;justify-content:space-between;gap:10px;font-size:10.5px;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:7px}
+  .match-top .live{color:var(--seal)}
+  .team{display:flex;align-items:baseline;gap:10px;padding:2px 0;font-size:14.5px}
+  .team .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .team .score{margin-left:auto;font-family:var(--serif-en);font-size:20px;line-height:1}
+  .team.win .score{color:var(--seal)}
+
+  .items{border-top:1px solid var(--line)}
+  .item{display:block;color:inherit;text-decoration:none;padding:12px 0;border-bottom:1px solid var(--line);transition:padding .25s,background .25s}
+  .item:hover{padding-left:8px;background:var(--paper-deep)}
+  .item-title{font-size:14px;line-height:1.75;letter-spacing:.02em}
+  .item-meta{margin-top:5px;font-size:10.5px;letter-spacing:.12em;color:var(--ink-soft)}
+  .item-meta .src{color:var(--seal)}
+  .item.clamp .item-title{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+  .quote{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:4px 12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .quote-name{font-size:12.5px;letter-spacing:.1em}
+  .quote-price{font-family:var(--serif-en);font-size:21px;text-align:right}
+  .quote-change{grid-column:1/3;font-size:11px;text-align:right;letter-spacing:.05em}
+  .up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--ink-soft)}
+  .empty{padding:34px 0;color:var(--ink-soft);font-size:12px;letter-spacing:.2em;text-align:center;border-bottom:1px solid var(--line)}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:36px;font-size:11px;line-height:2;letter-spacing:.1em;color:var(--ink-soft)}
+  .host{font-family:"Ma Shan Zheng",var(--serif-cn);color:var(--seal);font-size:15px;letter-spacing:.1em}
+  .fade{animation:fade .45s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media(max-width:1000px){
+    main{max-width:760px;padding-top:44px}
+    .digest-grid{grid-template-columns:1fr}
+    .stream,.stream:first-child,.stream:last-child{padding:30px 0;border-left:0;border-top:1px solid var(--line)}
+    .stream:first-child{border-top:0}
+    .stream-sub{margin-bottom:14px}
+    .item-title{font-size:14.5px}
+  }
+  @media(max-width:560px){
+    .frame{inset:8px}
+    main{padding:40px 6vw 58px}
+    .head{align-items:flex-start;flex-direction:column;gap:14px}
+    .back{align-self:flex-end;margin-top:-34px}
+    .dateline{font-size:15px}
+    .meta{margin:22px 0 30px}
+  }
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="frame" aria-hidden="true"></div>
+<main>
+  <div class="topline">三流合一 · 一页速览</div>
+  <div class="head">
+    <h1>资讯</h1>
+    <a class="back" href="index.html">← 返回留白</a>
+  </div>
+  <div class="dateline" id="dateline"></div>
+  <div class="meta">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="updated">数据加载中…</span>
+    <button class="refresh" id="refresh" onclick="load(true)">刷新</button>
+  </div>
+
+  <div class="digest-grid">
+    <section class="stream" aria-labelledby="sports-title">
+      <div class="stream-head"><span class="no">I</span><h2 id="sports-title">运动</h2><a class="all" href="sports.html">全览 →</a></div>
+      <div class="stream-sub">scores & stories</div>
+      <div id="sports-games"></div>
+      <div class="subhead">要闻</div>
+      <div id="sports-news"></div>
+    </section>
+
+    <section class="stream" aria-labelledby="tech-title">
+      <div class="stream-head"><span class="no">II</span><h2 id="tech-title">科技</h2><a class="all" href="tech.html">全览 →</a></div>
+      <div class="stream-sub">technology & ideas</div>
+      <div id="tech-news"></div>
+    </section>
+
+    <section class="stream" aria-labelledby="finance-title">
+      <div class="stream-head"><span class="no">III</span><h2 id="finance-title">财经</h2><a class="all" href="finance.html">全览 →</a></div>
+      <div class="stream-sub">markets & briefs</div>
+      <div id="finance-quotes"></div>
+      <div class="subhead">快讯</div>
+      <div id="finance-news"></div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <span><span class="host">展白 主理</span> · 数据来自直播吧、科技 RSS、东方财富与华尔街见闻</span>
+    <span>每 5 分钟自动刷新 · 点击条目阅读原文</span>
+  </footer>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dayFmt = new Intl.DateTimeFormat("zh-CN",{weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false});
+const cls = (v) => v > 0 ? "up" : v < 0 ? "down" : "flat";
+const sign = (v) => v > 0 ? "+" : "";
+const fmt = (n) => n == null ? "—" : Number(n).toLocaleString("zh-CN",{minimumFractionDigits:2,maximumFractionDigits:2});
+function timeAgo(iso){const s=(Date.now()-new Date(iso).getTime())/1000;if(s<3600)return Math.max(1,s/60|0)+" 分钟前";if(s<86400)return (s/3600|0)+" 小时前";return (s/86400|0)+" 天前"}
+function dayLabel(iso){const d=new Date(iso),now=new Date(),yesterday=new Date(now-864e5);const same=(a,b)=>a.toDateString()===b.toDateString();return (same(d,now)?"今天 ":same(d,yesterday)?"昨天 ":"")+dayFmt.format(d)}
+function empty(text="暂无数据"){return `<div class="empty">${text}</div>`}
+function newsItems(items,clamp=false){if(!items?.length)return empty();return `<div class="items fade">${items.map(n=>`<a class="item ${clamp?"clamp":""}" href="${esc(n.link||"#")}" target="_blank" rel="noopener"><div class="item-title">${esc(n.title||n.text)}</div><div class="item-meta">${n.source?`<span class="src">${esc(n.source)}</span> · `:""}${n.published?timeAgo(n.published):""}</div></a>`).join("")}</div>`}
+
+function matchCard(g){
+  const post=g.state==="post",live=g.state==="in";
+  const homeWin=post&&Number(g.home?.score)>Number(g.away?.score);
+  const awayWin=post&&Number(g.away?.score)>Number(g.home?.score);
+  const status=post?"终":live?(g.detail||"进行中"):dayLabel(g.startTime);
+  const row=(t,win)=>`<div class="team ${win?"win":""}"><span class="name">${esc(t?.name)}</span><span class="score">${g.state==="pre"?"":esc(t?.score??"")}</span></div>`;
+  return `<a class="match" href="${esc(g.link||"#")}" target="_blank" rel="noopener"><div class="match-top"><span>${esc(g.league||"")}</span><span class="${live?"live":""}">${esc(status)}</span></div>${row(g.away,awayWin)}${row(g.home,homeWin)}</a>`;
+}
+function paintSports(d){
+  if(!d){$("#sports-games").innerHTML=empty("源暂不可用");$("#sports-news").innerHTML="";return}
+  const data=d.nba??d;
+  const games=data.games||[];
+  const live=games.filter(g=>g.state==="in");
+  const recent=games.filter(g=>g.state==="post").sort((a,b)=>new Date(b.startTime)-new Date(a.startTime));
+  const upcoming=games.filter(g=>g.state==="pre").sort((a,b)=>new Date(a.startTime)-new Date(b.startTime));
+  const chosen=[...live.slice(0,1),...recent.slice(0,2),...upcoming.slice(0,1)].slice(0,4);
+  $("#sports-games").innerHTML=chosen.length?`<div class="fade">${chosen.map(matchCard).join("")}</div>`:empty("近期无赛事");
+  $("#sports-news").innerHTML=newsItems((data.news||[]).slice(0,3));
+}
+function paintTech(d){$("#tech-news").innerHTML=d?newsItems((d.items||[]).slice(0,7)):empty("源暂不可用")}
+function paintFinance(d){
+  if(!d){$("#finance-quotes").innerHTML=empty("源暂不可用");$("#finance-news").innerHTML="";return}
+  const wanted=["上证指数","创业板指","恒生指数","纳斯达克"];
+  const quotes=wanted.map(name=>(d.indices||[]).find(i=>i.name===name)).filter(Boolean);
+  $("#finance-quotes").innerHTML=quotes.length?`<div class="fade">${quotes.map(i=>`<div class="quote"><span class="quote-name">${esc(i.name)}</span><span class="quote-price ${cls(i.change)}">${fmt(i.price)}</span><span class="quote-change ${cls(i.change)}">${sign(i.change)}${fmt(i.change)} · ${sign(i.changePct)}${fmt(i.changePct)}%</span></div>`).join("")}</div>`:empty("行情暂不可用");
+  $("#finance-news").innerHTML=newsItems((d.news||[]).slice(0,4).map(n=>({...n,title:n.text})),true);
+}
+
+async function fetchJson(path){const r=await fetch(`${path}?t=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(r.status);return r.json()}
+async function load(manual){
+  const btn=$("#refresh");btn.disabled=true;btn.textContent="刷新中";
+  const results=await Promise.allSettled([fetchJson("data/sports.json"),fetchJson("data/tech.json"),fetchJson("data/finance.json")]);
+  const [sports,tech,finance]=results.map(r=>r.status==="fulfilled"?r.value:null);
+  paintSports(sports);paintTech(tech);paintFinance(finance);
+  const stamps=[sports,tech,finance].filter(Boolean).map(d=>new Date(d.updatedAt).getTime()).filter(Number.isFinite);
+  if(stamps.length){const latest=new Date(Math.max(...stamps));$("#updated").textContent=`更新于 ${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(latest)}${manual?"":" · 自动刷新"}`}
+  else $("#updated").textContent="数据加载失败，稍后自动重试";
+  btn.disabled=false;btn.textContent="刷新";
+}
+$("#dateline").textContent=new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"}).format(new Date());
+load();setInterval(load,5*60*1000);
+</script>
+</body>
+</html>
