@@ -1,7 +1,8 @@
-// 留白 · 科技/财经板块数据抓取
-// 科技：IT之家 / 36氪 / 少数派 官方 RSS 混排
+// 留白 · 科技/AI/财经板块数据抓取
+// 科技：IT之家 / 爱范儿 / 雷锋网 / 少数派 官方 RSS 混排
+// AI：OpenAI / MIT Technology Review / 量子位 官方 RSS 混排
 // 财经：东方财富行情（7 指数）+ 华尔街见闻 7×24 快讯
-// 输出 data/tech.json + data/finance.json；单源失败隔离。零依赖，Node >= 18。
+// 输出 data/{tech,ai,finance}.json；单源失败隔离。零依赖，Node >= 18。
 // 用法: node scripts/fetch-info.mjs [--dry]
 
 import { mkdir, writeFile } from "node:fs/promises";
@@ -10,11 +11,13 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_TECH = resolve(ROOT, "data/tech.json");
+const OUT_AI = resolve(ROOT, "data/ai.json");
 const OUT_FIN = resolve(ROOT, "data/finance.json");
 const UA =
   "Mozilla/5.0 (compatible; liubai-info-bot/1.0; +https://chrisxu1997.github.io)";
 const TIMEOUT = 20_000;
 const TECH_LIMIT = 25;
+const AI_LIMIT = 30;
 const FIN_NEWS_LIMIT = 40;
 
 async function getJson(url, headers = {}) {
@@ -100,6 +103,35 @@ async function fetchTech(errors) {
   return { updatedAt: new Date().toISOString(), items };
 }
 
+// ── AI：官方一手渠道 + 权威独立媒体 + 中文垂直报道 ────────
+const AI_FEEDS = [
+  { name: "OpenAI", url: "https://openai.com/news/rss.xml", limit: 12 },
+  { name: "MIT Tech Review", url: "https://www.technologyreview.com/topic/artificial-intelligence/feed/", limit: 12 },
+  { name: "量子位", url: "https://www.qbitai.com/feed", limit: 12 },
+  // Anthropic 暂无可发现的官方 RSS；DeepMind 当前网络不可达，不采用二手转源
+];
+
+async function fetchAi(errors) {
+  const feeds = await Promise.all(
+    AI_FEEDS.map((f) => safe(f.name, () => getText(f.url).then((x) => parseRss(x, f.name, f.limit)), errors)),
+  );
+  const seen = new Set();
+  const aiCn = /AI|人工智能|大模型|模型|机器人|智能体|自动驾驶|芯片|算力|OpenAI|DeepSeek|Agent|AIGC|生成式|具身|GPT|Claude|Gemini|Qwen|LLM/i;
+  const items = feeds
+    .filter(Boolean)
+    .flat()
+    .filter((n) => n.source !== "量子位" || aiCn.test(n.title)) // 过滤频道中的纯汽车等泛科技稿
+    .filter((n) => {
+      const key = n.title.slice(0, 24);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a, b) => new Date(b.published ?? 0) - new Date(a.published ?? 0))
+    .slice(0, AI_LIMIT);
+  return { updatedAt: new Date().toISOString(), items };
+}
+
 // ── 财经 ────────────────────────────────────────────────
 // 东方财富 push2：f2 最新价 f3 涨跌幅% f4 涨跌额 f12 代码 f14 名称 f18 昨收（价格均 ×100）
 const EM_INDEX_SECIDS =
@@ -149,18 +181,28 @@ async function fetchFinance(errors) {
 
 // ── 主流程 ──────────────────────────────────────────────
 const techErrors = {};
+const aiErrors = {};
 const finErrors = {};
 const tech = await safe("tech", () => fetchTech(techErrors), techErrors);
+const ai = await safe("ai", () => fetchAi(aiErrors), aiErrors);
 const finance = await safe("finance", () => fetchFinance(finErrors), finErrors);
 
 if (process.argv.includes("--dry")) {
-  console.log(JSON.stringify({ tech, finance }, null, 1));
+  console.log(JSON.stringify({ tech, ai, finance }, null, 1));
 } else {
   if (tech) {
     await mkdir(dirname(OUT_TECH), { recursive: true });
     await writeFile(
       OUT_TECH,
       JSON.stringify({ ...tech, ...(Object.keys(techErrors).length ? { errors: techErrors } : {}) }) + "\n",
+      "utf8",
+    );
+  }
+  if (ai) {
+    await mkdir(dirname(OUT_AI), { recursive: true });
+    await writeFile(
+      OUT_AI,
+      JSON.stringify({ ...ai, ...(Object.keys(aiErrors).length ? { errors: aiErrors } : {}) }) + "\n",
       "utf8",
     );
   }
@@ -173,6 +215,6 @@ if (process.argv.includes("--dry")) {
     );
   }
   console.log(
-    `ok tech=${tech ? tech.items.length : "FAIL"}(${Object.keys(techErrors).join(",") || "无错"}) finance=${finance ? finance.indices.length + "指/" + finance.news.length + "条" : "FAIL"}(${Object.keys(finErrors).join(",") || "无错"})`,
+    `ok tech=${tech ? tech.items.length : "FAIL"}(${Object.keys(techErrors).join(",") || "无错"}) ai=${ai ? ai.items.length : "FAIL"}(${Object.keys(aiErrors).join(",") || "无错"}) finance=${finance ? finance.indices.length + "指/" + finance.news.length + "条" : "FAIL"}(${Object.keys(finErrors).join(",") || "无错"})`,
   );
 }

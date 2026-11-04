@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>资讯 · 留白</title>
-<meta name="description" content="运动、科技、财经，三卷择一，静览。">
+<meta name="description" content="运动、科技、AI、财经，四卷择一，静览。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23b3352c'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='%23f6f1e7' font-family='serif'%3E讯%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,7 +95,7 @@
   @media(max-width:760px){
     main{padding:46px 6vw 62px}
     .reading{grid-template-columns:1fr;gap:36px;margin-top:48px}
-    .stream-nav{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+    .stream-nav{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
     .stream-tab{display:block;padding:17px 0 15px;border-bottom:0;text-align:center}
     .stream-tab:hover{padding-left:0}
     .stream-tab .no,.stream-tab .mark{display:none}
@@ -125,7 +125,7 @@
 <body>
 <div class="frame" aria-hidden="true"></div>
 <main>
-  <div class="topline">三卷择一 · 静览</div>
+  <div class="topline">四卷择一 · 静览</div>
   <div class="head">
     <h1>资讯</h1>
     <a class="back" href="index.html">← 返回留白</a>
@@ -141,13 +141,14 @@
     <nav class="stream-nav" aria-label="资讯分类">
       <button class="stream-tab on" data-tab="sports" aria-selected="true"><span class="no">I</span><span class="label">运动</span><span class="mark"></span></button>
       <button class="stream-tab" data-tab="tech" aria-selected="false"><span class="no">II</span><span class="label">科技</span><span class="mark"></span></button>
-      <button class="stream-tab" data-tab="finance" aria-selected="false"><span class="no">III</span><span class="label">财经</span><span class="mark"></span></button>
+      <button class="stream-tab" data-tab="ai" aria-selected="false"><span class="no">III</span><span class="label">AI</span><span class="mark"></span></button>
+      <button class="stream-tab" data-tab="finance" aria-selected="false"><span class="no">IV</span><span class="label">财经</span><span class="mark"></span></button>
     </nav>
     <section class="panel" id="panel" aria-live="polite"></section>
   </div>
 
   <footer class="foot">
-    <span><span class="host">展白 主理</span> · 直播吧 / 科技 RSS / 东方财富 / 华尔街见闻</span>
+    <span><span class="host">展白 主理</span> · 直播吧 / 科技与 AI RSS / 东方财富 / 华尔街见闻</span>
     <span>每 5 分钟自动刷新 · 全览见完整板块</span>
   </footer>
 </main>
@@ -159,9 +160,9 @@ const dayFmt=new Intl.DateTimeFormat("zh-CN",{weekday:"short",hour:"2-digit",min
 const cls=v=>v>0?"up":v<0?"down":"flat";
 const sign=v=>v>0?"+":"";
 const fmt=n=>n==null?"—":Number(n).toLocaleString("zh-CN",{minimumFractionDigits:2,maximumFractionDigits:2});
-const state={sports:null,tech:null,finance:null};
+const state={sports:null,tech:null,ai:null,finance:null};
 let active=localStorage.getItem("digest-tab")||"sports";
-const META={sports:{kicker:"scores & stories",href:"sports.html"},tech:{kicker:"technology & ideas",href:"tech.html"},finance:{kicker:"markets & briefs",href:"finance.html"}};
+const META={sports:{kicker:"scores & stories",href:"sports.html"},tech:{kicker:"technology & ideas",href:"tech.html"},ai:{kicker:"frontier & intelligence",href:"ai.html"},finance:{kicker:"markets & briefs",href:"finance.html"}};
 function timeAgo(iso){const s=(Date.now()-new Date(iso).getTime())/1000;if(s<3600)return Math.max(1,s/60|0)+" 分钟前";if(s<86400)return (s/3600|0)+" 小时前";return (s/86400|0)+" 天前"}
 function dayLabel(iso){const d=new Date(iso),now=new Date(),yesterday=new Date(now-864e5),same=(a,b)=>a.toDateString()===b.toDateString();return(same(d,now)?"今天 ":same(d,yesterday)?"昨天 ":"")+dayFmt.format(d)}
 const empty=(text="暂无数据")=>`<div class="empty">${text}</div>`;
@@ -182,6 +183,8 @@ function sportsPanel(){
   return `<div class="group"><div class="group-label">赛事</div>${chosen.length?chosen.map(matchCard).join(""):empty("近期无赛事")}</div><div class="group"><div class="group-label">要闻</div>${newsItems((d.news||[]).slice(0,2))}</div>`;
 }
 function techPanel(){return state.tech?`<div class="group"><div class="group-label">最新</div>${newsItems((state.tech.items||[]).slice(0,4))}</div>`:empty("源暂不可用")}
+function diverse(items,count){const per={},picked=[];for(const n of items){const used=per[n.source]||0;if(used>=2)continue;per[n.source]=used+1;picked.push(n);if(picked.length===count)break}return picked}
+function aiPanel(){return state.ai?`<div class="group"><div class="group-label">前沿</div>${newsItems(diverse(state.ai.items||[],4))}</div>`:empty("源暂不可用")}
 function financePanel(){
   const d=state.finance;if(!d)return empty("源暂不可用");
   const wanted=["上证指数","恒生指数","纳斯达克"],quotes=wanted.map(name=>(d.indices||[]).find(i=>i.name===name)).filter(Boolean);
@@ -190,15 +193,15 @@ function financePanel(){
 }
 function renderPanel(){
   document.querySelectorAll(".stream-tab").forEach(b=>{const on=b.dataset.tab===active;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
-  const html=active==="sports"?sportsPanel():active==="tech"?techPanel():financePanel();
+  const html=active==="sports"?sportsPanel():active==="tech"?techPanel():active==="ai"?aiPanel():financePanel();
   $("#panel").innerHTML=panelHead()+`<div class="fade">${html}</div>`;
 }
 document.querySelectorAll(".stream-tab").forEach(b=>b.addEventListener("click",()=>{active=b.dataset.tab;localStorage.setItem("digest-tab",active);renderPanel()}));
 async function fetchJson(path){const r=await fetch(`${path}?t=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(r.status);return r.json()}
 async function load(manual){
   const btn=$("#refresh");btn.disabled=true;btn.textContent="刷新中";
-  const results=await Promise.allSettled([fetchJson("data/sports.json"),fetchJson("data/tech.json"),fetchJson("data/finance.json")]);
-  ["sports","tech","finance"].forEach((key,i)=>{state[key]=results[i].status==="fulfilled"?results[i].value:null});
+  const results=await Promise.allSettled([fetchJson("data/sports.json"),fetchJson("data/tech.json"),fetchJson("data/ai.json"),fetchJson("data/finance.json")]);
+  ["sports","tech","ai","finance"].forEach((key,i)=>{state[key]=results[i].status==="fulfilled"?results[i].value:null});
   renderPanel();
   const stamps=Object.values(state).filter(Boolean).map(d=>new Date(d.updatedAt).getTime()).filter(Number.isFinite);
   $("#updated").textContent=stamps.length?`更新于 ${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(Math.max(...stamps)))}${manual?"":" · 自动刷新"}`:"数据加载失败，稍后自动重试";
