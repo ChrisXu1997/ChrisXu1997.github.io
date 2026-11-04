@@ -2,7 +2,8 @@
 // 科技：IT之家 / 爱范儿 / 雷锋网 / 少数派 官方 RSS 混排
 // AI：OpenAI / MIT Technology Review / 量子位 官方 RSS 混排
 // 财经：东方财富行情（7 指数）+ 华尔街见闻 7×24 快讯
-// 输出 data/{tech,ai,finance}.json；单源失败隔离。零依赖，Node >= 18。
+// 热榜：微博 / 百度 / B站热搜分平台聚合
+// 输出 data/{tech,ai,finance,hot}.json；单源失败隔离。零依赖，Node >= 18。
 // 用法: node scripts/fetch-info.mjs [--dry]
 
 import { mkdir, writeFile } from "node:fs/promises";
@@ -13,11 +14,13 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_TECH = resolve(ROOT, "data/tech.json");
 const OUT_AI = resolve(ROOT, "data/ai.json");
 const OUT_FIN = resolve(ROOT, "data/finance.json");
+const OUT_HOT = resolve(ROOT, "data/hot.json");
 const UA =
   "Mozilla/5.0 (compatible; liubai-info-bot/1.0; +https://chrisxu1997.github.io)";
 const TIMEOUT = 20_000;
 const TECH_LIMIT = 25;
 const AI_LIMIT = 30;
+const HOT_LIMIT = 12;
 const FIN_NEWS_LIMIT = 40;
 
 async function getJson(url, headers = {}) {
@@ -179,16 +182,67 @@ async function fetchFinance(errors) {
   };
 }
 
+// ── 热榜：微博 / 百度 / B站 ─────────────────────────────
+async function weiboHot() {
+  const j = await getJson("https://weibo.com/ajax/side/hotSearch", { referer: "https://weibo.com/hot/search" });
+  return (j?.data?.realtime ?? []).filter((n) => n.note).slice(0, HOT_LIMIT).map((n, i) => ({
+    title: n.note,
+    link: `https://s.weibo.com/weibo?q=${encodeURIComponent(n.word_scheme || `#${n.note}#`)}`,
+    heat: n.num ?? null,
+    rank: n.realpos ?? i + 1,
+  }));
+}
+
+async function baiduHot() {
+  const j = await getJson("https://top.baidu.com/api/board?platform=wise&tab=realtime", { referer: "https://top.baidu.com/board?tab=realtime" });
+  const found = [];
+  const walk = (x) => {
+    if (Array.isArray(x)) return x.forEach(walk);
+    if (!x || typeof x !== "object") return;
+    if (x.word && x.url) found.push(x);
+    Object.values(x).forEach(walk);
+  };
+  walk(j?.data);
+  return found.slice(0, HOT_LIMIT).map((n, i) => ({ title: n.word, link: n.url, heat: n.hotScore ?? null, rank: i + 1 }));
+}
+
+async function bilibiliHot() {
+  const j = await getJson("https://api.bilibili.com/x/web-interface/search/square?limit=20", { referer: "https://www.bilibili.com/" });
+  return (j?.data?.trending?.list ?? []).slice(0, HOT_LIMIT).map((n, i) => ({
+    title: n.show_name || n.keyword,
+    link: `https://search.bilibili.com/all?keyword=${encodeURIComponent(n.show_name || n.keyword)}`,
+    heat: n.heat_score ?? null,
+    rank: i + 1,
+  }));
+}
+
+async function fetchHot(errors) {
+  const defs = [
+    { source: "微博", fn: weiboHot },
+    { source: "百度", fn: baiduHot },
+    { source: "B站", fn: bilibiliHot },
+  ];
+  const groups = await Promise.all(defs.map(async (d) => {
+    const items = await safe(d.source, d.fn, errors);
+    return items ? { source: d.source, items } : null;
+  }));
+  const valid = groups.filter((g) => g?.items.length);
+  if (!valid.length) throw new Error("all hot sources failed");
+  return { updatedAt: new Date().toISOString(), groups: valid };
+}
+
 // ── 主流程 ──────────────────────────────────────────────
 const techErrors = {};
 const aiErrors = {};
 const finErrors = {};
+const hotErrors = {};
 const tech = await safe("tech", () => fetchTech(techErrors), techErrors);
 const ai = await safe("ai", () => fetchAi(aiErrors), aiErrors);
 const finance = await safe("finance", () => fetchFinance(finErrors), finErrors);
+const hot = await safe("hot", () => fetchHot(hotErrors), hotErrors);
 
 if (process.argv.includes("--dry")) {
-  console.log(JSON.stringify({ tech, ai, finance }, null, 1));
+  console.log(JSON.stringify({ tech, ai, finance, hot }, null, 1));
 } else {
   if (tech) {
     await mkdir(dirname(OUT_TECH), { recursive: true });
@@ -214,7 +268,15 @@ if (process.argv.includes("--dry")) {
       "utf8",
     );
   }
+  if (hot) {
+    await mkdir(dirname(OUT_HOT), { recursive: true });
+    await writeFile(
+      OUT_HOT,
+      JSON.stringify({ ...hot, ...(Object.keys(hotErrors).length ? { errors: hotErrors } : {}) }) + "\n",
+      "utf8",
+    );
+  }
   console.log(
-    `ok tech=${tech ? tech.items.length : "FAIL"}(${Object.keys(techErrors).join(",") || "无错"}) ai=${ai ? ai.items.length : "FAIL"}(${Object.keys(aiErrors).join(",") || "无错"}) finance=${finance ? finance.indices.length + "指/" + finance.news.length + "条" : "FAIL"}(${Object.keys(finErrors).join(",") || "无错"})`,
+    `ok tech=${tech ? tech.items.length : "FAIL"}(${Object.keys(techErrors).join(",") || "无错"}) ai=${ai ? ai.items.length : "FAIL"}(${Object.keys(aiErrors).join(",") || "无错"}) finance=${finance ? finance.indices.length + "指/" + finance.news.length + "条" : "FAIL"}(${Object.keys(finErrors).join(",") || "无错"}) hot=${hot ? hot.groups.map(g=>g.source+g.items.length).join("/") : "FAIL"}(${Object.keys(hotErrors).join(",") || "无错"})`,
   );
 }

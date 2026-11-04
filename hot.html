@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>热榜 · 留白</title>
+<meta name="description" content="微博、百度、B站热搜，分平台静览。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23b3352c'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='%23f6f1e7' font-family='serif'%3E热%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f6f1e7;--paper-deep:#efe8d8;--ink:#211d19;--ink-soft:#6f6558;--seal:#b3352c;--line:rgba(33,29,25,.16);--serif-cn:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",serif;--serif-en:"Cormorant Garamond",Georgia,serif}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:var(--serif-cn);min-height:100vh}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.5;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.52 0 0 0 0 0.45 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .frame{position:fixed;inset:14px;border:1px solid var(--line);pointer-events:none;z-index:4}.frame::after{content:"";position:absolute;inset:5px;border:1px solid rgba(33,29,25,.08)}
+  main{position:relative;max-width:900px;margin:0 auto;padding:56px 6vw 80px}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.head h1{font-size:clamp(44px,7vw,68px);font-weight:900;letter-spacing:.14em;line-height:1}
+  .back{font-size:12px;letter-spacing:.18em;color:var(--ink-soft);text-decoration:none}.back:hover{color:var(--seal)}
+  .meta{display:flex;align-items:center;gap:12px;margin:24px 0 52px;font-size:12px;letter-spacing:.12em;color:var(--ink-soft)}.meta .dot{width:5px;height:5px;border-radius:50%;background:var(--seal)}
+  .refresh{margin-left:auto;font-family:inherit;font-size:11px;letter-spacing:.18em;color:var(--ink-soft);background:none;border:0;border-bottom:1px solid var(--line);padding:3px 0;cursor:pointer}.refresh:hover{color:var(--seal);border-color:var(--seal)}
+  .group{margin-top:54px}.group:first-child{margin-top:0}.group-head{display:flex;align-items:baseline;gap:16px;margin-bottom:18px}.group-head h2{font-size:25px;letter-spacing:.26em;font-weight:600}.group-head span{font-family:var(--serif-en);font-style:italic;font-size:14px;color:var(--ink-soft)}.group-head::after{content:"";flex:1;height:1px;background:var(--line)}
+  .hot-item{display:grid;grid-template-columns:54px 1fr auto;align-items:baseline;gap:20px;padding:18px 0;border-bottom:1px solid var(--line);color:inherit;text-decoration:none;transition:padding .25s,background .25s}.hot-item:first-child{border-top:1px solid var(--line)}.hot-item:hover{padding-left:10px;background:var(--paper-deep)}
+  .rank{font-family:var(--serif-en);font-style:italic;font-size:23px;color:var(--ink-soft)}.hot-item:nth-child(-n+3) .rank{color:var(--seal)}
+  .title{font-size:16px;line-height:1.75;letter-spacing:.02em}.heat{font-size:11px;color:var(--ink-soft);white-space:nowrap;letter-spacing:.08em}
+  .empty{padding:44px 0;text-align:center;color:var(--ink-soft);font-size:13px;letter-spacing:.2em;border:1px dashed var(--line)}
+  .foot{margin-top:58px;padding-top:24px;border-top:1px solid var(--line);font-size:11px;line-height:2;letter-spacing:.1em;color:var(--ink-soft)}.host{font-family:"Ma Shan Zheng",var(--serif-cn);color:var(--seal);font-size:15px}
+  @media(max-width:560px){.frame{inset:8px}.hot-item{grid-template-columns:38px 1fr;gap:14px}.heat{grid-column:2;font-size:10px}.title{font-size:15px}}
+</style>
+</head>
+<body>
+<div class="frame" aria-hidden="true"></div>
+<main>
+  <div class="head"><h1>热榜</h1><a class="back" href="digest.html">← 返回资讯</a></div>
+  <div class="meta"><span class="dot"></span><span id="updated">数据加载中…</span><button class="refresh" id="refresh" onclick="load()">刷新</button></div>
+  <div id="content"></div>
+  <footer class="foot"><span class="host">展白 主理</span> · 微博 / 百度 / B站热搜，每 15 分钟更新；点击条目查看原站。</footer>
+</main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const heat=n=>n==null?"":n>=10000?(n/10000).toFixed(1).replace(/\.0$/,"")+" 万":String(n);
+function paint(d){
+  if(!d?.groups?.length){$("#content").innerHTML='<div class="empty">源暂不可用</div>';return}
+  $("#content").innerHTML=d.groups.map(g=>`<section class="group"><div class="group-head"><h2>${esc(g.source)}</h2><span>TOP ${g.items.length}</span></div><div>${g.items.map(n=>`<a class="hot-item" href="${esc(n.link)}" target="_blank" rel="noopener"><span class="rank">${String(n.rank).padStart(2,"0")}</span><span class="title">${esc(n.title)}</span><span class="heat">${heat(n.heat)}</span></a>`).join("")}</div></section>`).join("");
+}
+async function load(){const btn=$("#refresh");btn.disabled=true;try{const r=await fetch(`data/hot.json?t=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(r.status);const d=await r.json();$("#updated").textContent=`更新于 ${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(d.updatedAt))} · 自动刷新`;paint(d)}catch{$("#updated").textContent="数据加载失败"}finally{btn.disabled=false}}
+load();setInterval(load,5*60*1000);
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>资讯 · 留白</title>
-<meta name="description" content="运动、科技、AI、财经，四卷择一，静览。">
+<meta name="description" content="运动、科技、AI、财经、热榜，五卷择一，静览。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23b3352c'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='%23f6f1e7' font-family='serif'%3E讯%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +36,7 @@
   .refresh:hover{color:var(--seal);border-color:var(--seal)}
   .refresh:disabled{opacity:.5;cursor:wait}
 
-  .stream-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:36px;margin-top:46px}
+  .stream-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:28px;margin-top:46px}
   .stream-tab{position:relative;display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:4px 14px;padding:0 0 18px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink-soft);font-family:inherit;text-align:left;cursor:pointer;transition:color .3s}
   .stream-tab .no{font-family:var(--serif-en);font-style:italic;font-size:13px;color:var(--seal);opacity:.65}
   .stream-tab .label{font-size:21px;font-weight:600;letter-spacing:.24em}
@@ -95,6 +95,15 @@
   .quote-price{margin:14px 0 6px;font-family:var(--serif-en);font-size:35px;line-height:1}
   .quote-change{font-size:12px;letter-spacing:.04em}
   .up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--ink-soft)}
+  .hot-list{border-top:1px solid var(--line)}
+  .hot-item{display:grid;grid-template-columns:58px 1fr;gap:22px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line);color:inherit;text-decoration:none;transition:padding .3s,background .3s}
+  .hot-item:hover{padding-left:10px;background:linear-gradient(90deg,rgba(33,29,25,.025),transparent 80%)}
+  .hot-rank{font-family:var(--serif-en);font-style:italic;font-size:25px;color:var(--ink-soft)}
+  .hot-title{display:block;font-size:17px;line-height:1.8;letter-spacing:.02em}
+  .hot-item.featured .hot-rank{font-size:34px;color:var(--seal)}
+  .hot-item.featured .hot-title{font-size:clamp(22px,2.6vw,29px);font-weight:600;line-height:1.6}
+  .hot-meta{display:block;margin-top:7px;font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
+  .hot-meta .src{color:var(--seal)}
   .empty{padding:64px 0;text-align:center;color:var(--ink-soft);font-size:13px;letter-spacing:.24em;border-bottom:1px solid var(--line)}
   .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:54px;padding-top:26px;border-top:1px solid var(--line);font-size:11px;line-height:2;letter-spacing:.1em;color:var(--ink-soft)}
   .host{font-family:"Ma Shan Zheng",var(--serif-cn);color:var(--seal);font-size:15px;letter-spacing:.1em}
@@ -136,6 +145,8 @@
     .quote-price{margin:0;grid-column:2;grid-row:1;font-size:27px}
     .quote-change{grid-column:2;grid-row:2;text-align:right}
     .item-title{font-size:16px}
+    .hot-item{grid-template-columns:40px 1fr;gap:14px}
+    .hot-title{font-size:16px}
   }
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -159,6 +170,7 @@
     <button class="stream-tab" data-tab="tech" aria-selected="false"><span class="no">02</span><span class="label">科技</span><span class="en">Technology</span></button>
     <button class="stream-tab" data-tab="ai" aria-selected="false"><span class="no">03</span><span class="label">AI</span><span class="en">Intelligence</span></button>
     <button class="stream-tab" data-tab="finance" aria-selected="false"><span class="no">04</span><span class="label">财经</span><span class="en">Markets</span></button>
+    <button class="stream-tab" data-tab="hot" aria-selected="false"><span class="no">05</span><span class="label">热榜</span><span class="en">Trending</span></button>
   </nav>
 
   <section class="cover" id="cover" aria-labelledby="cover-title">
@@ -188,13 +200,14 @@ const dayFmt=new Intl.DateTimeFormat("zh-CN",{weekday:"short",hour:"2-digit",min
 const cls=v=>v>0?"up":v<0?"down":"flat";
 const sign=v=>v>0?"+":"";
 const fmt=n=>n==null?"—":Number(n).toLocaleString("zh-CN",{minimumFractionDigits:2,maximumFractionDigits:2});
-const state={sports:null,tech:null,ai:null,finance:null};
+const state={sports:null,tech:null,ai:null,finance:null,hot:null};
 let active=localStorage.getItem("digest-tab")||"sports";
 const META={
   sports:{vol:"卷一 · THE GAME",title:"运动",en:"The rhythm of the game",poem:"比分会定格，赛场仍在呼吸。",mark:"赛",href:"sports.html"},
   tech:{vol:"卷二 · THE IDEAS",title:"科技",en:"Ideas, in motion",poem:"看见技术如何改变世界，也看见它为何而来。",mark:"科",href:"tech.html"},
   ai:{vol:"卷三 · THE FRONTIER",title:"AI",en:"Frontiers of intelligence",poem:"追踪智能的边界，保留人的判断。",mark:"智",href:"ai.html"},
-  finance:{vol:"卷四 · THE MARKETS",title:"财经",en:"The pulse of markets",poem:"数字有涨跌，阅读不必慌张。",mark:"财",href:"finance.html"}
+  finance:{vol:"卷四 · THE MARKETS",title:"财经",en:"The pulse of markets",poem:"数字有涨跌，阅读不必慌张。",mark:"财",href:"finance.html"},
+  hot:{vol:"卷五 · THE TRENDING",title:"热榜",en:"What the world is talking about",poem:"众声喧哗处，留一双清醒的眼。",mark:"热",href:"hot.html"}
 };
 function timeAgo(iso){const s=(Date.now()-new Date(iso).getTime())/1000;if(s<3600)return Math.max(1,s/60|0)+" 分钟前";if(s<86400)return (s/3600|0)+" 小时前";return (s/86400|0)+" 天前"}
 function dayLabel(iso){const d=new Date(iso),now=new Date(),yesterday=new Date(now-864e5),same=(a,b)=>a.toDateString()===b.toDateString();return(same(d,now)?"今天 ":same(d,yesterday)?"昨天 ":"")+dayFmt.format(d)}
@@ -224,20 +237,29 @@ function financePanel(){
   const quoteHtml=quotes.length?`<div class="quotes">${quotes.map(i=>`<div class="quote"><div class="quote-name">${esc(i.name)}</div><div class="quote-price ${cls(i.change)}">${fmt(i.price)}</div><div class="quote-change ${cls(i.change)}">${sign(i.change)}${fmt(i.change)} · ${sign(i.changePct)}${fmt(i.changePct)}%</div></div>`).join("")}</div>`:empty("行情暂不可用");
   return `<div class="group"><div class="group-label">指数</div>${quoteHtml}</div><div class="group"><div class="group-label">快讯</div>${newsItems((d.news||[]).slice(0,2).map(n=>({...n,title:n.text})),true)}</div>`;
 }
+function heatText(n){return n==null?"":n>=10000?(n/10000).toFixed(1).replace(/\.0$/,"")+" 万热度":n+" 热度"}
+function hotPanel(){
+  const groups=state.hot?.groups??[];
+  if(!groups.length)return empty("源暂不可用");
+  const picked=groups.map(g=>({...g.items[0],source:g.source}));
+  const weibo=groups.find(g=>g.source==="微博");
+  if(weibo?.items[1])picked.push({...weibo.items[1],source:"微博"});
+  return `<div class="hot-list">${picked.map((n,i)=>`<a class="hot-item ${i===0?"featured":""}" href="${esc(n.link)}" target="_blank" rel="noopener"><span class="hot-rank">${String(i+1).padStart(2,"0")}</span><span><span class="hot-title">${esc(n.title)}</span><span class="hot-meta"><span class="src">${esc(n.source)}</span> · 站内第 ${n.rank}${n.heat!=null?" · "+heatText(n.heat):""}</span></span></a>`).join("")}</div>`;
+}
 function renderPanel(){
   const m=META[active]??META.sports;
   document.querySelectorAll(".stream-tab").forEach(b=>{const on=b.dataset.tab===active;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
   $("#cover-vol").textContent=m.vol;$("#cover-title").textContent=m.title;$("#cover-en").textContent=m.en;$("#cover-poem").textContent=m.poem;$("#watermark").textContent=m.mark;
   const cover=$("#cover");cover.classList.remove("swap");void cover.offsetWidth;cover.classList.add("swap");
-  const html=active==="sports"?sportsPanel():active==="tech"?techPanel():active==="ai"?aiPanel():financePanel();
+  const html=active==="sports"?sportsPanel():active==="tech"?techPanel():active==="ai"?aiPanel():active==="finance"?financePanel():hotPanel();
   $("#panel").innerHTML=panelHead()+`<div class="fade">${html}</div>`;
 }
 document.querySelectorAll(".stream-tab").forEach(b=>b.addEventListener("click",()=>{active=b.dataset.tab;localStorage.setItem("digest-tab",active);renderPanel()}));
 async function fetchJson(path){const r=await fetch(`${path}?t=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(r.status);return r.json()}
 async function load(manual){
   const btn=$("#refresh");btn.disabled=true;btn.textContent="刷新中";
-  const results=await Promise.allSettled([fetchJson("data/sports.json"),fetchJson("data/tech.json"),fetchJson("data/ai.json"),fetchJson("data/finance.json")]);
-  ["sports","tech","ai","finance"].forEach((key,i)=>{state[key]=results[i].status==="fulfilled"?results[i].value:null});
+  const results=await Promise.allSettled([fetchJson("data/sports.json"),fetchJson("data/tech.json"),fetchJson("data/ai.json"),fetchJson("data/finance.json"),fetchJson("data/hot.json")]);
+  ["sports","tech","ai","finance","hot"].forEach((key,i)=>{state[key]=results[i].status==="fulfilled"?results[i].value:null});
   renderPanel();
   const stamps=Object.values(state).filter(Boolean).map(d=>new Date(d.updatedAt).getTime()).filter(Number.isFinite);
   $("#updated").textContent=stamps.length?`更新于 ${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(Math.max(...stamps)))}${manual?"":" · 自动刷新"}`:"数据加载失败，稍后自动重试";
