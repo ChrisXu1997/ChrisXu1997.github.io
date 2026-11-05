@@ -53,20 +53,26 @@
   .group-head .sub{font-family:var(--serif-en);font-style:italic;font-size:14px;color:var(--ink-soft)}
   .group-head::after{content:"";flex:1;height:1px;background:var(--line)}
 
-  /* 比分卡 */
-  .games{display:flex;flex-direction:column;gap:12px}
-  .game{display:block;text-decoration:none;color:inherit;background:var(--paper);border:1px solid var(--line);padding:16px 20px;transition:all .25s;position:relative}
-  .game:hover{border-color:var(--ink);transform:translateX(4px)}
-  .game .league{font-size:11.5px;letter-spacing:.24em;color:var(--ink-soft);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-  .team{display:flex;align-items:center;gap:10px;padding:4px 0;font-size:16px;letter-spacing:.04em}
-  .team img{width:22px;height:22px;object-fit:contain;flex:none}
-  .team .name{flex:1}
-  .team .score{font-family:var(--serif-en);font-size:22px;font-weight:500;min-width:34px;text-align:right}
-  .team.win .score{color:var(--seal)}
-  .state{display:inline-flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.15em}
-  .state.in{color:var(--seal)}
-  .state.in::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--seal);animation:breathe 1.6s infinite}
-  .state.pre,.state.post{color:var(--ink-soft)}
+  /* 紧凑比分表 */
+  .schedule-group{margin:34px 0 28px}
+  .schedule-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+  .schedule-head h2{font-size:19px;font-weight:600;letter-spacing:.3em}
+  .schedule-head .sub{font-family:var(--serif-en);font-style:italic;font-size:14px;color:var(--ink-soft)}
+  .schedule-toggle{margin-left:auto;border:0;background:none;color:var(--seal);font-family:inherit;font-size:11px;letter-spacing:.12em;cursor:pointer;padding:4px 0}
+  .schedule-toggle:hover{text-decoration:underline;text-underline-offset:4px}
+  .schedule-list{border-top:1px solid var(--line)}
+  .fixture{display:grid;grid-template-columns:90px minmax(0,1fr) auto minmax(0,1fr);align-items:baseline;gap:16px;padding:14px 4px;border-bottom:1px solid var(--line);color:inherit;text-decoration:none;transition:background .2s,padding .2s}
+  .fixture:hover{background:var(--paper-deep);padding-left:10px}
+  .f-meta{font-size:11px;letter-spacing:.08em;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .f-meta.live{color:var(--seal)}
+  .f-meta.live::before{content:"";display:inline-block;width:5px;height:5px;margin-right:6px;border-radius:50%;background:var(--seal);animation:breathe 1.6s infinite}
+  .f-team{min-width:0;font-size:15.5px;letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .f-home{text-align:right}
+  .f-score{min-width:64px;text-align:center;font-family:var(--serif-en);font-size:21px;font-weight:500;white-space:nowrap}
+  .f-score.pre{font-family:var(--serif-cn);font-size:13px;color:var(--ink-soft)}
+  .f-win{color:var(--seal)}
+  .schedule-group[data-limit="3"]:not(.expanded) .fixture:nth-child(n+4),
+  .schedule-group[data-limit="4"]:not(.expanded) .fixture:nth-child(n+5){display:none}
 
   /* 新闻 */
   .news{display:flex;flex-direction:column}
@@ -86,8 +92,12 @@
   @media (max-width:600px){
     main{padding:40px 5vw 60px}
     .tabs{top:8px}
-    .game{padding:14px 14px}
-    .team{font-size:15px}
+    .fixture{grid-template-columns:62px minmax(0,1fr) auto minmax(0,1fr);gap:10px;padding:13px 0}
+    .fixture:hover{padding-left:4px}
+    .f-meta{font-size:10px}
+    .f-team{font-size:14px}
+    .f-score{min-width:52px;font-size:18px}
+    .schedule-head h2{font-size:18px}
   }
 </style>
 </head>
@@ -149,22 +159,27 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 /* ── 渲染 ── */
 const STATE_ORDER = { in: 0, pre: 1, post: 2 };
 
-function gameCard(g) {
-  const stateCls = g.state;
-  const stateText = g.state === "post" ? "终" : g.state === "in" ? (g.detail || "进行中") : dayLabel(g.startTime);
-  const row = (t) => t ? `
-    <div class="team ${g.state === "post" && t.winner ? "win" : ""}">
-      <span class="name">${esc(t.name)}</span>
-      <span class="score">${g.state === "pre" ? "" : (t.score ?? "")}</span>
-    </div>` : "";
-  return `
-    <a class="game fade" href="${esc(g.link || "#")}" target="_blank" rel="noopener">
-      <div class="league">
-        <span>${esc(g.league || "")}${g.note ? " · " + esc(g.note) : ""}</span>
-        <span class="state ${stateCls}">${esc(stateText)}</span>
-      </div>
-      ${row(g.away)}${row(g.home)}
-    </a>`;
+function fixture(g) {
+  const post = g.state === "post", live = g.state === "in", pre = g.state === "pre";
+  const awayWin = post && Number(g.away?.score) > Number(g.home?.score);
+  const homeWin = post && Number(g.home?.score) > Number(g.away?.score);
+  const status = post ? "终" : live ? (g.detail || "进行中") : dayLabel(g.startTime);
+  const meta = `${g.league ? g.league + " · " : ""}${status}${g.note ? " · " + g.note : ""}`;
+  const score = pre ? "未赛" : `${g.away?.score ?? "—"} : ${g.home?.score ?? "—"}`;
+  return `<a class="fixture fade" href="${esc(g.link || "#")}" target="_blank" rel="noopener" title="${esc(meta)}">
+    <span class="f-meta ${live ? "live" : ""}">${esc(meta)}</span>
+    <span class="f-team ${awayWin ? "f-win" : ""}">${esc(g.away?.name)}</span>
+    <span class="f-score ${pre ? "pre" : ""}">${esc(score)}</span>
+    <span class="f-team f-home ${homeWin ? "f-win" : ""}">${esc(g.home?.name)}</span>
+  </a>`;
+}
+
+function scheduleSection(title, sub, games, limit) {
+  const rest = games.length - limit;
+  return `<section class="schedule-group" data-limit="${limit}">
+    <div class="schedule-head"><h2>${esc(title)}</h2><span class="sub">${esc(sub)}</span>${rest > 0 ? `<button class="schedule-toggle" type="button">展开其余 ${rest} 场</button>` : ""}</div>
+    <div class="schedule-list">${games.map(fixture).join("")}</div>
+  </section>`;
 }
 
 function newsList(items) {
@@ -183,11 +198,11 @@ function renderNba(d) {
   const live = d.games.filter((g) => g.state === "in");
   const done = d.games.filter((g) => g.state === "post").sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
   const pre = d.games.filter((g) => g.state === "pre").sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+  const compact = (games) => games.map((g) => ({ ...g, league: "" }));
   const parts = [];
-  const card = (g) => gameCard({ ...g, league: "" }); // 本 tab 全为 NBA，卡内不再重复联赛名
-  if (live.length) parts.push(`<div class="group-head"><h2>进行中</h2><span class="sub">live</span></div><div class="games">${live.map(card).join("")}</div>`);
-  if (done.length) parts.push(`<div class="group-head"><h2>赛果</h2><span class="sub">近两日</span></div><div class="games">${done.map(card).join("")}</div>`);
-  if (pre.length) parts.push(`<div class="group-head"><h2>赛程</h2><span class="sub">即将开打</span></div><div class="games">${pre.map(card).join("")}</div>`);
+  if (live.length) parts.push(scheduleSection("进行中", "live", compact(live), 4));
+  if (done.length) parts.push(scheduleSection("赛果", "近两日", compact(done), 4));
+  if (pre.length) parts.push(scheduleSection("赛程", "即将开打", compact(pre), 4));
   if (!parts.length) parts.push(`<div class="empty">近期无赛事</div>`);
   if (d.news?.length) parts.push(`<div class="group-head"><h2>要闻</h2><span class="sub">via ${esc(d.news[0]?.source || "")}</span></div>` + newsList(d.news));
   return parts.join("");
@@ -199,7 +214,7 @@ function renderSoccer(d) {
   for (const l of d.leagues || []) {
     const games = [...l.games].sort((a, b) =>
       (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
-    parts.push(`<div class="group-head"><h2>${esc(l.name)}</h2><span class="sub">${games.filter((g) => g.state === "in").length ? "● 直播中" : ""}</span></div><div class="games">${games.map((g) => gameCard({ ...g, league: "" })).join("")}</div>`);
+    parts.push(scheduleSection(l.name, games.filter((g) => g.state === "in").length ? "● 直播中" : "", games, 3));
   }
   if (!parts.length) parts.push(`<div class="empty">近期无赛事</div>`);
   if (d.headlines?.length) parts.push(`<div class="group-head"><h2>头条</h2><span class="sub">via ${esc(d.headlines[0]?.source || "")}</span></div>` + newsList(d.headlines));
@@ -212,7 +227,7 @@ function renderEsports(d) {
   if (d.events?.length) {
     const games = [...d.events].sort((a, b) =>
       (STATE_ORDER[a.state] - STATE_ORDER[b.state]) || (new Date(a.startTime) - new Date(b.startTime)));
-    parts.push(`<div class="group-head"><h2>赛程</h2><span class="sub">LOL · KPL · CS 等</span></div><div class="games">${games.map(gameCard).join("")}</div>`);
+    parts.push(scheduleSection("赛程", "LOL · KPL · CS 等", games, 4));
   }
   if (d.news?.length) parts.push(`<div class="group-head"><h2>要闻</h2><span class="sub">via ${esc(d.news[0]?.source || "")}</span></div>` + newsList(d.news));
   if (!parts.length) parts.push(`<div class="empty">近期无赛事</div>`);
@@ -241,6 +256,16 @@ document.addEventListener("click", (event) => {
   if (!link) return;
   event.preventDefault();
   ArticleReader.open(readerItems[Number(link.dataset.reader)]);
+});
+
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest(".schedule-toggle");
+  if (!btn) return;
+  const group = btn.closest(".schedule-group");
+  const expanded = group.classList.toggle("expanded");
+  const total = group.querySelectorAll(".fixture").length;
+  const limit = Number(group.dataset.limit) || 4;
+  btn.textContent = expanded ? "收起" : `展开其余 ${total - limit} 场`;
 });
 
 /* ── 数据 ── */
