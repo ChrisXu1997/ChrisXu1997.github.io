@@ -4,54 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>日常 · 留白</title>
-<meta name="description" content="时钟、天气、待办、便签与书签，留一点日常给自己。">
+<meta name="description" content="今日、专注、清单、倒数与书签，一本留白的日常手账。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23b3352c'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='%23f6f1e7' font-family='serif'%3E常%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
   :root{--paper:#f6f1e7;--paper-deep:#efe8d8;--ink:#211d19;--ink-soft:#6f6558;--seal:#b3352c;--line:rgba(33,29,25,.16);--serif-cn:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",serif;--serif-en:"Cormorant Garamond",Georgia,serif}
-  *{margin:0;padding:0;box-sizing:border-box}button,input,textarea{font:inherit}button{cursor:pointer}
-  body{background:var(--paper);color:var(--ink);font-family:var(--serif-cn);min-height:100vh}
+  *{margin:0;padding:0;box-sizing:border-box}button,input,textarea{font:inherit}button{cursor:pointer}body{background:var(--paper);color:var(--ink);font-family:var(--serif-cn);min-height:100vh}
   body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.5;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.52 0 0 0 0 0.45 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
   .frame{position:fixed;inset:14px;border:1px solid var(--line);pointer-events:none;z-index:4}.frame::after{content:"";position:absolute;inset:5px;border:1px solid rgba(33,29,25,.08)}
-  main{position:relative;max-width:1100px;margin:0 auto;padding:42px 6vw 70px}
-  .masthead{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:22px;border-bottom:1px solid var(--ink)}
-  .brand{display:flex;align-items:baseline;gap:14px;color:var(--ink);text-decoration:none}.brand strong{font-size:21px;letter-spacing:.3em}.brand span{font-family:var(--serif-en);font-size:13px;letter-spacing:.16em;color:var(--ink-soft)}
-  .back{font-size:12px;letter-spacing:.18em;color:var(--ink-soft);text-decoration:none}.back:hover{color:var(--seal)}
-  .moment{display:grid;grid-template-columns:1fr 330px;gap:64px;align-items:end;padding:58px 0 52px;border-bottom:1px solid var(--line)}
-  .clock-label,.section-kicker{font-size:11px;letter-spacing:.3em;color:var(--seal)}
-  .clock{display:flex;align-items:baseline;gap:18px;margin:12px 0 8px;font-family:var(--serif-en);font-size:clamp(88px,12vw,138px);font-weight:500;line-height:1;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
-  .seconds{font-size:30px;color:var(--ink-soft);letter-spacing:0}
-  .date{font-size:16px;letter-spacing:.16em;line-height:2;color:var(--ink-soft)}
-  .weather{border-left:1px solid var(--line);padding-left:36px;min-width:0}
-  .weather-city{font-size:13px;letter-spacing:.18em;color:var(--ink-soft)}
-  .weather-temp{margin:8px 0 2px;font-family:var(--serif-en);font-size:58px;line-height:1}
-  .weather-desc{font-size:14px;letter-spacing:.1em}
-  .weather-detail{margin-top:12px;font-size:11.5px;line-height:2;color:var(--ink-soft);letter-spacing:.08em}
-  .weather-setup{margin-top:20px;font-size:14px;line-height:1.9;color:var(--ink-soft)}
-  .city-form{display:flex;gap:10px;margin-top:18px}.city-form input{width:0;flex:1;min-width:0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);padding:7px 2px;outline:none;font-size:13px}.city-form input:focus{border-color:var(--seal)}
-  .text-btn{border:0;background:none;color:var(--seal);font-size:12px;letter-spacing:.14em;padding:4px 0}.text-btn:hover{text-decoration:underline;text-underline-offset:4px}
-  .city-suggestions{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px}.city-suggestions button{border:0;background:none;color:var(--ink-soft);font-size:11px;padding:0}.city-suggestions button:hover{color:var(--seal)}
-  #weather-error{min-height:18px;margin-top:8px;font-size:11px;color:var(--seal)}
-  #sparkline{display:block;width:100%;height:52px;margin-top:18px;overflow:visible}
-
-  .life-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:52px}
-  .block+.block{margin-top:52px}
-  .block-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}.block-head h2{font-size:20px;letter-spacing:.26em;font-weight:600}.block-head span{font-family:var(--serif-en);font-style:italic;font-size:14px;color:var(--ink-soft)}
-  .add-form{display:flex;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--line)}.add-form input{min-width:0;flex:1;border:0;background:none;outline:none;padding:8px 0;color:var(--ink);font-size:14px}.add-form input::placeholder{color:rgba(111,101,88,.65)}
-  .task-list{list-style:none}.task{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}.task input{appearance:none;width:15px;height:15px;flex:none;border:1px solid var(--ink-soft);border-radius:50%;display:grid;place-items:center;cursor:pointer}.task input:checked{background:var(--seal);border-color:var(--seal)}.task input:checked::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--paper)}
-  .task .task-text{flex:1;font-size:14.5px;line-height:1.7;overflow-wrap:anywhere}.task.done .task-text{text-decoration:line-through;color:var(--ink-soft);opacity:.65}
-  .delete{opacity:0;border:0;background:none;color:var(--ink-soft);font-size:17px;padding:2px 4px;transition:opacity .2s,color .2s}.task:hover .delete,.bookmark:hover .delete{opacity:1}.delete:hover{color:var(--seal)}
-  .task-count{margin-top:12px;font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
-  .quiet-empty{padding:26px 0;color:var(--ink-soft);font-size:13px;letter-spacing:.1em}
-  #notes{display:block;width:100%;min-height:190px;resize:vertical;border:1px solid var(--line);background:rgba(255,255,255,.12);color:var(--ink);padding:18px 20px;outline:none;font-size:14.5px;line-height:2;letter-spacing:.03em}#notes:focus{border-color:var(--ink-soft)}#note-status{display:block;margin-top:10px;font-size:11px;letter-spacing:.12em;color:var(--ink-soft);text-align:right}
-  .bookmark-list{border-top:1px solid var(--line)}.bookmark{display:flex;align-items:baseline;gap:14px;padding:16px 0;border-bottom:1px solid var(--line);color:inherit;text-decoration:none;transition:padding .25s,background .25s}.bookmark:hover{padding-left:8px;background:var(--paper-deep)}.bookmark .index{font-family:var(--serif-en);font-style:italic;font-size:13px;color:var(--seal)}.bookmark .name{font-size:15px;letter-spacing:.06em}.bookmark .host{margin-left:auto;max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;color:var(--ink-soft)}.bookmark .arrow{font-family:var(--serif-en);font-size:17px;color:var(--ink-soft)}.bookmark .delete{margin-left:4px}
-  .bookmark-form{display:grid;grid-template-columns:1fr 1.5fr auto;gap:12px;margin-top:20px}.bookmark-form input{min-width:0;border:0;border-bottom:1px solid var(--line);background:none;padding:8px 0;outline:none;color:var(--ink);font-size:12px}.bookmark-form input:focus{border-color:var(--seal)}
-  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:58px;padding-top:24px;border-top:1px solid var(--line);font-size:11px;line-height:2;letter-spacing:.1em;color:var(--ink-soft)}.host-name{font-family:"Ma Shan Zheng",var(--serif-cn);color:var(--seal);font-size:15px}
-  .fade{animation:fade .55s ease}@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  @media(max-width:760px){.moment{grid-template-columns:1fr;gap:34px;padding:44px 0}.weather{border-left:0;border-top:1px solid var(--line);padding:28px 0 0}.life-grid{grid-template-columns:1fr;gap:50px;margin-top:44px}.block+.block{margin-top:0}.bookmark-form{grid-template-columns:1fr 1fr}.bookmark-form .text-btn{grid-column:2;justify-self:end}}
-  @media(max-width:560px){.frame{inset:8px}main{padding:32px 6vw 58px}.brand span{display:none}.clock{font-size:82px}.seconds{font-size:24px}.date{font-size:14px}.bookmark-form{grid-template-columns:1fr}.bookmark-form .text-btn{grid-column:auto;justify-self:start}}
+  main{position:relative;max-width:1120px;margin:0 auto;padding:42px 6vw 70px}.masthead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;padding-bottom:22px;border-bottom:1px solid var(--ink)}
+  .brand{display:flex;align-items:baseline;gap:14px;color:var(--ink);text-decoration:none}.brand strong{font-size:21px;letter-spacing:.3em}.brand span{font-family:var(--serif-en);font-size:13px;letter-spacing:.16em;color:var(--ink-soft)}.issue{text-align:center;font-size:11px;letter-spacing:.2em;color:var(--ink-soft)}.issue .no{font-family:var(--serif-en);font-style:italic;font-size:14px}.back{justify-self:end;font-size:12px;letter-spacing:.18em;color:var(--ink-soft);text-decoration:none}.back:hover{color:var(--seal)}
+  .stream-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:28px;margin-top:42px}.stream-tab{position:relative;display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:4px 14px;padding:0 0 18px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink-soft);font-family:inherit;text-align:left}.stream-tab .no{font-family:var(--serif-en);font-style:italic;font-size:13px;color:var(--seal);opacity:.65}.stream-tab .label{font-size:21px;font-weight:600;letter-spacing:.2em}.stream-tab .en{grid-column:2;font-family:var(--serif-en);font-style:italic;font-size:13px;opacity:.72}.stream-tab::after{content:"";position:absolute;left:0;bottom:-1px;width:0;height:2px;background:var(--seal);transition:width .35s}.stream-tab:hover,.stream-tab.on{color:var(--ink)}.stream-tab.on::after{width:52px}.stream-tab.on .no{opacity:1}
+  .cover{position:relative;display:grid;grid-template-columns:1fr 310px;align-items:end;gap:48px;min-height:300px;padding:58px 0 52px;border-bottom:1px solid var(--line);overflow:hidden}.cover-main,.cover-side{position:relative;z-index:1}.cover-vol{margin-bottom:18px;font-size:11px;letter-spacing:.32em;color:var(--seal)}.cover-title{font-size:clamp(74px,10vw,118px);font-weight:900;line-height:1;letter-spacing:.12em}.cover-en{font-family:var(--serif-en);font-style:italic;font-size:22px;color:var(--ink-soft)}.cover-poem{margin-top:18px;font-size:14px;line-height:2.1;letter-spacing:.09em;color:var(--ink-soft)}.watermark{position:absolute;right:-8px;bottom:-88px;font-family:"Ma Shan Zheng",var(--serif-cn);font-size:330px;line-height:1;color:rgba(33,29,25,.045);pointer-events:none}.cover.swap .cover-main,.cover.swap .cover-side{animation:coverIn .5s ease}@keyframes coverIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .panel{padding-top:38px}.group+.group{margin-top:44px}.group-label{display:flex;align-items:center;gap:14px;margin-bottom:16px;font-size:11px;letter-spacing:.28em;color:var(--ink-soft)}.group-label::after{content:"";width:44px;height:1px;background:var(--line)}.text-btn{border:0;background:none;color:var(--seal);font-size:12px;letter-spacing:.14em;padding:4px 0}.text-btn:hover{text-decoration:underline;text-underline-offset:4px}.text-btn:disabled{opacity:.45;cursor:default}.quiet{font-size:12px;line-height:2;color:var(--ink-soft);letter-spacing:.08em}.form-row{display:flex;gap:14px;align-items:center}.form-row input{min-width:0;flex:1;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);padding:9px 0;outline:none;font-size:13px}.form-row input:focus{border-color:var(--seal)}
+  .today-top{display:grid;grid-template-columns:1fr 300px;gap:58px;align-items:end}.big-time{display:flex;align-items:baseline;gap:16px;font-family:var(--serif-en);font-size:clamp(80px,10vw,116px);line-height:1;font-variant-numeric:tabular-nums}.big-time small{font-size:27px;color:var(--ink-soft)}.today-date{margin-top:12px;font-size:15px;letter-spacing:.14em;color:var(--ink-soft)}.progress-block{margin-top:24px;max-width:420px}.progress-line{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.1em;color:var(--ink-soft)}.progress-track{height:1px;margin-top:10px;background:var(--line)}.progress-track i{display:block;height:1px;background:var(--seal);transition:width .5s}.year-progress{margin-top:18px}
+  .weather{border-left:1px solid var(--line);padding-left:32px}.weather-city{font-size:12px;letter-spacing:.16em;color:var(--ink-soft)}.weather-temp{margin:7px 0 2px;font-family:var(--serif-en);font-size:56px;line-height:1}.weather-desc{font-size:14px;letter-spacing:.1em}.weather-detail{margin-top:10px;font-size:11px;line-height:2;color:var(--ink-soft)}.city-suggestions{display:flex;flex-wrap:wrap;gap:8px 13px;margin-top:12px}.city-suggestions button{border:0;background:none;color:var(--ink-soft);font-size:11px;padding:0}.city-suggestions button:hover{color:var(--seal)}#weather-error{min-height:18px;margin-top:8px;font-size:11px;color:var(--seal)}#sparkline{display:block;width:100%;height:48px;margin-top:16px;overflow:visible}
+  .timer-wrap{padding:18px 0 12px;text-align:center}.timer{font-family:var(--serif-en);font-size:clamp(88px,13vw,132px);line-height:1;font-variant-numeric:tabular-nums}.timer-caption{margin-top:14px;font-size:12px;letter-spacing:.22em;color:var(--ink-soft)}.timer-track{max-width:460px;height:1px;margin:28px auto;background:var(--line)}.timer-track i{display:block;height:2px;background:var(--seal);transition:width 1s linear}.timer-actions{display:flex;justify-content:center;align-items:center;gap:26px;margin-top:26px}.timer-actions .text-btn{font-size:13px}.mode-list{display:flex;justify-content:center;gap:24px;margin-top:18px}.mode-list button{border:0;background:none;color:var(--ink-soft);font-size:12px;padding:4px 0}.mode-list button.on{color:var(--seal);border-bottom:1px solid var(--seal)}
+  .habit-row{display:grid;grid-template-columns:110px 1fr 20px;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--line)}.habit-name{font-size:14px;letter-spacing:.08em}.habit-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.day-check{border:1px solid var(--line);background:none;color:var(--ink-soft);aspect-ratio:1;display:grid;place-items:center;font-size:10px;transition:all .2s}.day-check.on{background:var(--seal);border-color:var(--seal);color:var(--paper)}.day-check.today{box-shadow:0 0 0 2px var(--paper),0 0 0 3px var(--ink-soft)}.delete{border:0;background:none;color:var(--ink-soft);font-size:17px;padding:2px 4px;opacity:.45}.delete:hover{color:var(--seal);opacity:1}
+  .task-list{list-style:none}.task{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}.task input{appearance:none;width:15px;height:15px;flex:none;border:1px solid var(--ink-soft);border-radius:50%;display:grid;place-items:center}.task input:checked{background:var(--seal);border-color:var(--seal)}.task input:checked::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--paper)}.task-text{flex:1;font-size:14.5px;line-height:1.7;overflow-wrap:anywhere}.task.done .task-text{text-decoration:line-through;color:var(--ink-soft);opacity:.65}.task-count{margin-top:12px;font-size:11px;color:var(--ink-soft);letter-spacing:.12em}#notes{width:100%;min-height:190px;resize:vertical;border:1px solid var(--line);background:rgba(255,255,255,.12);color:var(--ink);padding:18px 20px;outline:none;font-size:14.5px;line-height:2}#notes:focus{border-color:var(--ink-soft)}#note-status{display:block;margin-top:10px;font-size:11px;color:var(--ink-soft);text-align:right}
+  .countdown{display:grid;grid-template-columns:110px 1fr auto 20px;align-items:baseline;gap:20px;padding:22px 0;border-bottom:1px solid var(--line)}.count-days{font-family:var(--serif-en);font-size:40px;color:var(--seal)}.count-days small{font-family:var(--serif-cn);font-size:11px;color:var(--ink-soft);margin-left:6px}.count-name{font-size:16px;letter-spacing:.06em}.count-date{display:block;margin-top:5px;font-size:11px;color:var(--ink-soft);letter-spacing:.1em}.count-tag{font-size:11px;color:var(--ink-soft);white-space:nowrap}
+  .bookmark-row{display:flex;align-items:center;border-bottom:1px solid var(--line)}.bookmark{display:flex;align-items:baseline;gap:14px;flex:1;min-width:0;padding:16px 0;color:inherit;text-decoration:none;transition:padding .25s,background .25s}.bookmark:hover{padding-left:8px;background:var(--paper-deep)}.bookmark .index{font-family:var(--serif-en);font-style:italic;font-size:13px;color:var(--seal)}.bookmark .name{font-size:15px;letter-spacing:.06em}.bookmark .host{margin-left:auto;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10.5px;color:var(--ink-soft)}.bookmark .arrow{font-family:var(--serif-en);font-size:17px;color:var(--ink-soft)}.bookmark-form{display:grid;grid-template-columns:1fr 1.5fr auto;gap:14px;margin-top:20px}.bookmark-form input{min-width:0;border:0;border-bottom:1px solid var(--line);background:none;padding:8px 0;outline:none;font-size:12px}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:52px;padding-top:24px;border-top:1px solid var(--line);font-size:11px;line-height:2;letter-spacing:.1em;color:var(--ink-soft)}.host{font-family:"Ma Shan Zheng",var(--serif-cn);color:var(--seal);font-size:15px}.fade{animation:fade .45s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media(max-width:760px){main{padding:32px 6vw 58px}.masthead{grid-template-columns:1fr auto}.issue{display:none}.stream-nav{gap:16px}.stream-tab .label{font-size:18px;letter-spacing:.12em}.stream-tab .en{display:none}.cover{grid-template-columns:1fr;gap:26px;min-height:0;padding:46px 0 42px}.cover-title{font-size:76px}.watermark{font-size:230px;bottom:-48px}.today-top{grid-template-columns:1fr;gap:34px}.weather{border-left:0;border-top:1px solid var(--line);padding:26px 0 0}.habit-row{grid-template-columns:78px 1fr 18px;gap:10px}.habit-days{gap:5px}.countdown{grid-template-columns:82px 1fr 20px;gap:14px}.count-tag{display:none}}
+  @media(max-width:560px){.frame{inset:8px}.brand span{display:none}.stream-nav{gap:8px}.stream-tab{grid-template-columns:1fr;text-align:center}.stream-tab .no{font-size:11px}.stream-tab .label{font-size:16px}.stream-tab::after{left:50%;transform:translateX(-50%)}.stream-tab.on::after{width:30px}.big-time{font-size:76px}.timer{font-size:88px}.bookmark-form{grid-template-columns:1fr}.count-days{font-size:32px}}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -60,140 +37,80 @@
 <main>
   <header class="masthead">
     <a class="brand" href="index.html"><strong>留白</strong><span>THE QUIET EVERYDAY</span></a>
+    <div class="issue"><span class="no" id="issue-no"></span><br><span id="issue-date"></span></div>
     <a class="back" href="index.html">返回首页 ↗</a>
   </header>
-
-  <section class="moment">
-    <div>
-      <div class="clock-label">此刻 · RIGHT NOW</div>
-      <div class="clock"><span id="clock-time">--:--</span><span class="seconds" id="clock-seconds">--</span></div>
-      <div class="date" id="date-line"></div>
-    </div>
-    <aside class="weather" aria-label="天气">
-      <div id="weather-content">
-        <div class="weather-city" id="weather-city">窗外 · WEATHER</div>
-        <div class="weather-setup" id="weather-setup">设定一座城市，看看那边的天气。</div>
-        <div id="weather-live" hidden>
-          <div class="weather-temp" id="weather-temp"></div>
-          <div class="weather-desc" id="weather-desc"></div>
-          <div class="weather-detail" id="weather-detail"></div>
-          <svg id="sparkline" viewBox="0 0 280 52" role="img" aria-label="未来十二小时气温趋势"></svg>
-        </div>
-        <form class="city-form" id="city-form"><input id="city-input" placeholder="输入城市，如：杭州" aria-label="城市" autocomplete="off"><button class="text-btn" type="submit">查询</button></form>
-        <div class="city-suggestions" id="city-suggestions">
-          <button type="button" data-city="北京">北京</button><button type="button" data-city="上海">上海</button><button type="button" data-city="广州">广州</button><button type="button" data-city="深圳">深圳</button><button type="button" data-city="杭州">杭州</button><button type="button" data-city="成都">成都</button>
-        </div>
-        <div id="weather-error" role="status"></div>
-      </div>
-    </aside>
+  <nav class="stream-nav" aria-label="日常分页">
+    <button class="stream-tab on" data-tab="today"><span class="no">01</span><span class="label">今日</span><span class="en">Today</span></button>
+    <button class="stream-tab" data-tab="focus"><span class="no">02</span><span class="label">专注</span><span class="en">Focus</span></button>
+    <button class="stream-tab" data-tab="tasks"><span class="no">03</span><span class="label">清单</span><span class="en">Lists</span></button>
+    <button class="stream-tab" data-tab="dates"><span class="no">04</span><span class="label">倒数</span><span class="en">Countdown</span></button>
+    <button class="stream-tab" data-tab="links"><span class="no">05</span><span class="label">书签</span><span class="en">Places</span></button>
+  </nav>
+  <section class="cover" id="cover">
+    <div class="cover-main"><div class="cover-vol" id="cover-vol"></div><h1 class="cover-title" id="cover-title"></h1></div>
+    <div class="cover-side"><div class="cover-en" id="cover-en"></div><p class="cover-poem" id="cover-poem"></p></div>
+    <span class="watermark" id="watermark" aria-hidden="true"></span>
   </section>
-
-  <div class="life-grid">
-    <div>
-      <section class="block">
-        <div class="block-head"><h2>待办</h2><span>small things</span></div>
-        <form class="add-form" id="task-form"><input id="task-input" maxlength="120" placeholder="写下一件要做的小事…" aria-label="新待办"><button class="text-btn" type="submit">记下</button></form>
-        <ul class="task-list" id="task-list"></ul>
-        <div class="task-count" id="task-count"></div>
-      </section>
-      <section class="block">
-        <div class="block-head"><h2>便签</h2><span>leave a note</span></div>
-        <textarea id="notes" placeholder="此刻想到什么，就写在这里。内容会自动保存。"></textarea>
-        <span id="note-status"></span>
-      </section>
-    </div>
-
-    <section class="block">
-      <div class="block-head"><h2>书签</h2><span>familiar places</span></div>
-      <div class="bookmark-list" id="bookmark-list"></div>
-      <form class="bookmark-form" id="bookmark-form">
-        <input id="bookmark-name" maxlength="24" placeholder="名称" aria-label="书签名称" required>
-        <input id="bookmark-url" placeholder="https://…" aria-label="书签地址" required>
-        <button class="text-btn" type="submit">添加</button>
-      </form>
-    </section>
-  </div>
-
-  <footer class="foot">
-    <span><span class="host-name">展白 主理</span> · 天气来自 Open-Meteo</span>
-    <span>城市、待办、便签与书签仅保存在当前浏览器</span>
-  </footer>
+  <section class="panel" id="panel"></section>
+  <footer class="foot"><span><span class="host">展白 主理</span> · 天气来自 Open-Meteo</span><span>个人内容仅保存在当前浏览器</span></footer>
 </main>
-
 <script>
-const $=(s)=>document.querySelector(s);
-const esc=(s)=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store={get(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}},set(k,v){localStorage.setItem(k,JSON.stringify(v))}};
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7),pad=n=>String(n).padStart(2,"0"),dayKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const state={city:store.get("liubai-city",null),weather:null,tasks:store.get("liubai-tasks",[]),notes:store.get("liubai-notes",""),bookmarks:store.get("liubai-bookmarks",[]),habits:store.get("liubai-habits",null)||[{id:"water",name:"喝水",days:{}},{id:"reading",name:"阅读",days:{}},{id:"exercise",name:"运动",days:{}}],dates:store.get("liubai-countdowns",[]),focusDone:store.get("liubai-focus-done",0)};
+let active=localStorage.getItem("life-tab")||"today";
+const META={today:{vol:"第一页 · TODAY",title:"今日",en:"A day, slowly",poem:"不必把每一分钟写满，今天本身就是答案。",mark:"今"},focus:{vol:"第二页 · FOCUS",title:"专注",en:"One thing at a time",poem:"只做一件事，日子便有了清晰的轮廓。",mark:"定"},tasks:{vol:"第三页 · LISTS",title:"清单",en:"Small things, kept",poem:"把小事记下，把心腾空。",mark:"单"},dates:{vol:"第四页 · COUNTDOWN",title:"倒数",en:"Days worth waiting for",poem:"有些日子尚未到来，已经开始发光。",mark:"期"},links:{vol:"第五页 · PLACES",title:"书签",en:"Familiar places",poem:"常去的地方，也值得安静地收藏。",mark:"签"}};
+const WEATHER={0:"晴",1:"大致晴朗",2:"局部多云",3:"阴",45:"雾",48:"雾凇",51:"轻毛毛雨",53:"毛毛雨",55:"浓毛毛雨",61:"小雨",63:"中雨",65:"大雨",71:"小雪",73:"中雪",75:"大雪",80:"小阵雨",81:"阵雨",82:"强阵雨",85:"小阵雪",86:"阵雪",95:"雷暴",96:"雷雨伴冰雹",99:"强雷雨伴冰雹"};
+const DEFAULT_LINKS=[{name:"GitHub",url:"https://github.com"},{name:"直播吧",url:"https://www.zhibo8.com"},{name:"IT之家",url:"https://www.ithome.com"},{name:"少数派",url:"https://sspai.com"},{name:"OpenAI",url:"https://openai.com"},{name:"华尔街见闻",url:"https://wallstreetcn.com"}];
 
-// 时钟与日期
-function tick(){const d=new Date(),pad=n=>String(n).padStart(2,"0");$("#clock-time").textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;$("#clock-seconds").textContent=pad(d.getSeconds());$("#date-line").textContent=new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"}).format(d)}
-tick();setInterval(tick,1000);
+// 今日
+function dayProgress(){const d=new Date(),seconds=d.getHours()*3600+d.getMinutes()*60+d.getSeconds(),pct=seconds/86400*100,start=new Date(d.getFullYear(),0,0),day=Math.floor((d-start)/864e5),days=new Date(d.getFullYear(),11,31).getDate()===31&&((d.getFullYear()%4===0&&d.getFullYear()%100!==0)||d.getFullYear()%400===0)?366:365;return{pct:pct.toFixed(1),left:Math.max(0,86400-seconds),day,days}}
+function weatherHtml(){
+  if(!state.weather)return `<div class="quiet" style="margin-top:12px">设定一座城市，看看那边的天气。</div>`;
+  const d=state.weather;return `<div class="weather-temp">${Math.round(d.current.temperature_2m)}°</div><div class="weather-desc">${WEATHER[d.current.weather_code]||"天气变化中"}</div><div class="weather-detail">最高 ${Math.round(d.daily.temperature_2m_max[0])}° · 最低 ${Math.round(d.daily.temperature_2m_min[0])}°<br>体感 ${Math.round(d.current.apparent_temperature)}° · 湿度 ${d.current.relative_humidity_2m}% · 风速 ${Math.round(d.current.wind_speed_10m)} km/h</div>${sparkline(d.hourly.time,d.hourly.temperature_2m,d.current.time)}`;
+}
+function sparkline(times,temps,currentTime){const start=Math.max(0,times.indexOf(currentTime)),values=temps.slice(start,start+12);if(values.length<2)return"";const min=Math.min(...values)-1,max=Math.max(...values)+1,w=280,h=48,points=values.map((v,i)=>[i*(w/(values.length-1)),h-(v-min)/(max-min)*h]),path=points.map((p,i)=>`${i?"L":"M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");return `<svg id="sparkline" viewBox="0 0 280 52"><path d="${path}" fill="none" stroke="#b3352c" stroke-width="1.5"/><circle cx="${points[0][0]}" cy="${points[0][1]}" r="3" fill="#b3352c"/><text x="0" y="50" fill="#6f6558" font-size="9">现在</text><text x="${w}" y="50" text-anchor="end" fill="#6f6558" font-size="9">+${values.length-1} 小时</text></svg>`}
+function todayPanel(){const p=dayProgress();return `<div class="today-top"><div><div class="big-time"><span id="today-time">--:--</span><small id="today-seconds">--</small></div><div class="today-date" id="today-date"></div><div class="progress-block"><div class="progress-line"><span>今日已走过 ${p.pct}%</span><span id="day-left"></span></div><div class="progress-track"><i id="day-progress" style="width:${p.pct}%"></i></div><div class="progress-line year-progress"><span>今年第 ${p.day} 天</span><span>余 ${p.days-p.day} 天</span></div></div></div><aside class="weather"><div class="weather-city">${esc(state.city?state.city.name+(state.city.region&&state.city.region!==state.city.name?" · "+state.city.region:""):"窗外 · WEATHER")}</div><div id="weather-content">${weatherHtml()}</div><form class="form-row" data-form="city" style="margin-top:16px"><input id="city-input" value="${esc(state.city?.name||"")}" placeholder="输入城市，如：杭州" aria-label="城市"><button class="text-btn" type="submit">查询</button></form><div class="city-suggestions">${["北京","上海","广州","深圳","杭州","成都"].map(c=>`<button type="button" data-city="${c}">${c}</button>`).join("")}</div><div id="weather-error"></div></aside></div>`}
+async function selectCity(name){$("#weather-error").textContent="正在寻找城市…";try{const g=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=zh&format=json`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}),place=g.results?.[0];if(!place)throw new Error("没有找到这座城市");state.city={name:place.name,latitude:place.latitude,longitude:place.longitude,region:place.admin1||place.country||""};store.set("liubai-city",state.city);await loadWeather()}catch(e){$("#weather-error").textContent=e.message==="没有找到这座城市"?e.message:"查询失败，请稍后再试"}}
+async function loadWeather(){if(!state.city)return;$("#weather-error").textContent="天气更新中…";try{const c=state.city,d=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.latitude}&longitude=${c.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=auto`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});state.weather=d;if(active==="today")renderPanel()}catch{$("#weather-error").textContent="天气暂时无法取得，可稍后重新查询"}}
 
-// 天气：仅用户主动设置城市后请求
-const WEATHER={0:"晴",1:"大致晴朗",2:"局部多云",3:"阴",45:"雾",48:"雾凇",51:"轻毛毛雨",53:"毛毛雨",55:"浓毛毛雨",56:"冻毛毛雨",57:"强冻毛毛雨",61:"小雨",63:"中雨",65:"大雨",66:"冻雨",67:"强冻雨",71:"小雪",73:"中雪",75:"大雪",77:"雪粒",80:"小阵雨",81:"阵雨",82:"强阵雨",85:"小阵雪",86:"阵雪",95:"雷暴",96:"雷雨伴冰雹",99:"强雷雨伴冰雹"};
-async function selectCity(name){
-  $("#weather-error").textContent="正在寻找城市…";
-  try{
-    const geo=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=zh&format=json`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
-    const place=geo.results?.[0];if(!place)throw new Error("没有找到这座城市");
-    const city={name:place.name,latitude:place.latitude,longitude:place.longitude,region:place.admin1||place.country||""};
-    store.set("liubai-city",city);await loadWeather(city);
-  }catch(e){$("#weather-error").textContent=e.message==="没有找到这座城市"?e.message:"查询失败，请稍后再试"}
+// 专注与习惯
+const focus={mode:25,remaining:25*60,running:false,endAt:0,timer:null};
+function focusText(){return `${pad(Math.floor(focus.remaining/60))}:${pad(focus.remaining%60)}`}
+function focusPanel(){
+  const progress=(focus.mode*60-focus.remaining)/(focus.mode*60)*100;
+  const habits=state.habits.map(h=>`<div class="habit-row"><span class="habit-name">${esc(h.name)}</span><div class="habit-days">${lastDays().map(d=>`<button type="button" class="day-check ${h.days[d.key]?"on":""} ${d.key===dayKey(new Date())?"today":""}" data-habit="${h.id}" data-day="${d.key}" title="${d.label}">${d.week}</button>`).join("")}</div><button class="delete" data-habit-delete="${h.id}" aria-label="删除习惯">×</button></div>`).join("");
+  return `<div class="timer-wrap"><div class="timer" id="focus-time">${focusText()}</div><div class="timer-caption">${focus.running?"正在专注 · 其余交给这一刻":"留一段时间，只给一件事"}</div><div class="timer-track"><i id="focus-progress" style="width:${progress}%"></i></div><div class="timer-actions"><button class="text-btn" data-focus-toggle>${focus.running?"暂停":"开始"}</button><button class="text-btn" data-focus-reset>重置</button><span class="quiet">已完成 ${state.focusDone} 次</span></div><div class="mode-list">${[25,50,15].map(m=>`<button type="button" class="${focus.mode===m?"on":""}" data-focus-mode="${m}">${m} 分钟</button>`).join("")}</div></div><div class="group"><div class="group-label">七日习惯</div>${habits}<form class="form-row" data-form="habit" style="margin-top:18px"><input id="habit-input" maxlength="12" placeholder="添加一个小习惯，如：早睡"><button class="text-btn" type="submit">添加</button></form></div>`;
 }
-async function loadWeather(city){
-  $("#weather-error").textContent="天气更新中…";
-  try{
-    const url=`https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=auto`;
-    const d=await fetch(url).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
-    $("#weather-city").textContent=`${city.name}${city.region&&city.region!==city.name?" · "+city.region:""}`;
-    $("#weather-temp").textContent=`${Math.round(d.current.temperature_2m)}°`;
-    $("#weather-desc").textContent=WEATHER[d.current.weather_code]||"天气变化中";
-    $("#weather-detail").innerHTML=`最高 ${Math.round(d.daily.temperature_2m_max[0])}° · 最低 ${Math.round(d.daily.temperature_2m_min[0])}°<br>体感 ${Math.round(d.current.apparent_temperature)}° · 湿度 ${d.current.relative_humidity_2m}% · 风速 ${Math.round(d.current.wind_speed_10m)} km/h`;
-    $("#weather-live").hidden=false;$("#weather-setup").hidden=true;$("#weather-error").textContent="";
-    drawSparkline(d.hourly.time,d.hourly.temperature_2m,d.current.time);
-  }catch{$("#weather-error").textContent="天气暂时无法取得，可稍后重新查询"}
-}
-function drawSparkline(times,temps,currentTime){
-  const start=Math.max(0,times.indexOf(currentTime)),values=temps.slice(start,start+12);if(values.length<2)return;
-  const min=Math.min(...values)-1,max=Math.max(...values)+1,w=280,h=52;
-  const points=values.map((v,i)=>[i*(w/(values.length-1)),h-(v-min)/(max-min)*h]);
-  const path=points.map((p,i)=>`${i?"L":"M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
-  $("#sparkline").innerHTML=`<path d="${path}" fill="none" stroke="#b3352c" stroke-width="1.5"/><circle cx="${points[0][0]}" cy="${points[0][1]}" r="3" fill="#b3352c"/><text x="0" y="50" fill="#6f6558" font-size="9">现在</text><text x="${w}" y="50" text-anchor="end" fill="#6f6558" font-size="9">+${values.length-1} 小时</text>`;
-}
-$("#city-form").addEventListener("submit",e=>{e.preventDefault();const name=$("#city-input").value.trim();if(name)selectCity(name)});
-$("#city-suggestions").addEventListener("click",e=>{const name=e.target.dataset.city;if(name){$("#city-input").value=name;selectCity(name)}});
-const savedCity=store.get("liubai-city",null);if(savedCity){$("#city-input").value=savedCity.name;loadWeather(savedCity)}
+function lastDays(){const out=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);out.push({key:dayKey(d),week:new Intl.DateTimeFormat("zh-CN",{weekday:"short"}).format(d).replace("周",""),label:`${d.getMonth()+1}月${d.getDate()}日`})}return out}
+function focusTick(){focus.remaining=Math.max(0,Math.ceil((focus.endAt-Date.now())/1000));const el=$("#focus-time");if(el)el.textContent=focusText();const bar=$("#focus-progress");if(bar)bar.style.width=`${(focus.mode*60-focus.remaining)/(focus.mode*60)*100}%`;if(focus.remaining<=0){clearInterval(focus.timer);focus.running=false;state.focusDone++;store.set("liubai-focus-done",state.focusDone);if(active==="focus")renderPanel()}}
+function focusToggle(){if(focus.running){focus.remaining=Math.max(0,Math.ceil((focus.endAt-Date.now())/1000));focus.running=false;clearInterval(focus.timer)}else{focus.running=true;focus.endAt=Date.now()+focus.remaining*1000;focus.timer=setInterval(focusTick,1000)}renderPanel()}
 
-// 待办
-let tasks=store.get("liubai-tasks",[]);
-function renderTasks(){
-  $("#task-list").innerHTML=tasks.length?tasks.map(t=>`<li class="task ${t.done?"done":""}"><input type="checkbox" data-id="${t.id}" ${t.done?"checked":""} aria-label="完成待办"><span class="task-text">${esc(t.text)}</span><button class="delete" data-delete="${t.id}" aria-label="删除待办">×</button></li>`).join(""):`<li class="quiet-empty">暂无待办，写下一件小事。</li>`;
-  const left=tasks.filter(t=>!t.done).length;$("#task-count").textContent=tasks.length?`${left} 件待完成 · ${tasks.length-left} 件已完成`:"";
-  store.set("liubai-tasks",tasks);
-}
-$("#task-form").addEventListener("submit",e=>{e.preventDefault();const text=$("#task-input").value.trim();if(!text)return;tasks.unshift({id:uid(),text,done:false});$("#task-input").value="";renderTasks()});
-$("#task-list").addEventListener("click",e=>{const del=e.target.dataset.delete;if(del){tasks=tasks.filter(t=>t.id!==del);renderTasks()}});
-$("#task-list").addEventListener("change",e=>{const id=e.target.dataset.id;if(!id)return;const t=tasks.find(t=>t.id===id);if(t){t.done=e.target.checked;renderTasks()}});
-renderTasks();
+// 清单
+function tasksPanel(){const left=state.tasks.filter(t=>!t.done).length;return `<div class="group"><div class="group-label">待办</div><form class="form-row" data-form="task"><input id="task-input" maxlength="120" placeholder="写下一件要做的小事…"><button class="text-btn" type="submit">记下</button></form><ul class="task-list" style="margin-top:14px">${state.tasks.length?state.tasks.map(t=>`<li class="task ${t.done?"done":""}"><input type="checkbox" data-task="${t.id}" ${t.done?"checked":""}><span class="task-text">${esc(t.text)}</span><button class="delete" data-task-delete="${t.id}">×</button></li>`).join(""):`<li class="quiet" style="padding:22px 0">暂无待办，写下一件小事。</li>`}</ul><div class="task-count">${state.tasks.length?`${left} 件待完成 · ${state.tasks.length-left} 件已完成`:""}</div></div><div class="group"><div class="group-label">便签</div><textarea id="notes" placeholder="此刻想到什么，就写在这里。内容会自动保存。">${esc(state.notes)}</textarea><span id="note-status">${state.notes?"已恢复上次便签":""}</span></div>`}
 
-// 便签自动保存
-const notes=$("#notes");notes.value=store.get("liubai-notes","");let noteTimer;
-if(notes.value)$("#note-status").textContent="已恢复上次便签";
-notes.addEventListener("input",()=>{clearTimeout(noteTimer);$("#note-status").textContent="正在保存…";noteTimer=setTimeout(()=>{store.set("liubai-notes",notes.value);$("#note-status").textContent=`已自动保存 ${new Intl.DateTimeFormat("zh-CN",{hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date())}`},350)});
+// 倒数
+function daysBetween(date){const today=new Date();today.setHours(0,0,0,0);const target=new Date(date);target.setHours(0,0,0,0);return Math.ceil((target-today)/864e5)}
+function countdownRow(name,date,id=""){const days=daysBetween(date),text=days>0?"还有":days<0?"已过":"就在";return `<div class="countdown"><span class="count-days">${Math.abs(days)}<small>天</small></span><div><span class="count-name">${esc(name)}</span><span class="count-date">${esc(date)}</span></div><span class="count-tag">${text}${days===0?"今天":""}</span>${id?`<button class="delete" data-date-delete="${id}">×</button>`:"<span></span>"}</div>`}
+function datesPanel(){const next=`${new Date().getFullYear()+1}-01-01`;return `<div class="group"><div class="group-label">重要日子</div>${countdownRow("下一次新年",next)}${state.dates.map(d=>countdownRow(d.name,d.date,d.id)).join("")}<form class="form-row" data-form="date" style="margin-top:22px"><input id="date-name" maxlength="20" placeholder="日子名称" required><input id="date-value" type="date" required><button class="text-btn" type="submit">添加</button></form></div>`}
 
 // 书签
-const DEFAULT_LINKS=[{name:"GitHub",url:"https://github.com"},{name:"直播吧",url:"https://www.zhibo8.com"},{name:"IT之家",url:"https://www.ithome.com"},{name:"少数派",url:"https://sspai.com"},{name:"OpenAI",url:"https://openai.com"},{name:"华尔街见闻",url:"https://wallstreetcn.com"}];
-let customLinks=store.get("liubai-bookmarks",[]);
 function safeUrl(value){try{const u=new URL(/^https?:\/\//i.test(value)?value:"https://"+value);return["http:","https:"].includes(u.protocol)?u.href:null}catch{return null}}
-function renderBookmarks(){
-  const all=[...DEFAULT_LINKS.map(x=>({...x,default:true})),...customLinks];
-  $("#bookmark-list").innerHTML=all.map((b,i)=>{const url=safeUrl(b.url);let host="";try{host=new URL(url).hostname.replace(/^www\./,"")}catch{}return `<a class="bookmark" href="${esc(url)}" target="_blank" rel="noopener"><span class="index">${String(i+1).padStart(2,"0")}</span><span class="name">${esc(b.name)}</span><span class="host">${esc(host)}</span><span class="arrow">↗</span>${b.id?`<button class="delete" data-bookmark="${b.id}" aria-label="删除书签">×</button>`:""}</a>`}).join("");
-  store.set("liubai-bookmarks",customLinks);
-}
-$("#bookmark-form").addEventListener("submit",e=>{e.preventDefault();const name=$("#bookmark-name").value.trim(),url=safeUrl($("#bookmark-url").value.trim());if(!name||!url){$("#bookmark-url").focus();return}customLinks.push({id:uid(),name,url});$("#bookmark-name").value="";$("#bookmark-url").value="";renderBookmarks()});
-$("#bookmark-list").addEventListener("click",e=>{const id=e.target.dataset.bookmark;if(!id)return;e.preventDefault();customLinks=customLinks.filter(b=>b.id!==id);renderBookmarks()});
-renderBookmarks();
+function linksPanel(){const all=[...DEFAULT_LINKS,...state.bookmarks];return `<div class="group"><div class="group-label">常去之处</div>${all.map((b,i)=>{const u=safeUrl(b.url);let host="";try{host=new URL(u).hostname.replace(/^www\./,"")}catch{}return `<div class="bookmark-row"><a class="bookmark" href="${esc(u)}" target="_blank" rel="noopener"><span class="index">${String(i+1).padStart(2,"0")}</span><span class="name">${esc(b.name)}</span><span class="host">${esc(host)}</span><span class="arrow">↗</span></a>${b.id?`<button class="delete" data-link-delete="${b.id}">×</button>`:""}</div>`}).join("")}<form class="bookmark-form" data-form="link"><input id="link-name" maxlength="24" placeholder="名称" required><input id="link-url" placeholder="https://…" required><button class="text-btn" type="submit">添加</button></form></div>`}
+
+function renderPanel(){const m=META[active]||META.today;document.querySelectorAll(".stream-tab").forEach(b=>{const on=b.dataset.tab===active;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});$("#cover-vol").textContent=m.vol;$("#cover-title").textContent=m.title;$("#cover-en").textContent=m.en;$("#cover-poem").textContent=m.poem;$("#watermark").textContent=m.mark;const cover=$("#cover");cover.classList.remove("swap");void cover.offsetWidth;cover.classList.add("swap");const html=active==="today"?todayPanel():active==="focus"?focusPanel():active==="tasks"?tasksPanel():active==="dates"?datesPanel():linksPanel();$("#panel").innerHTML=`<div class="fade">${html}</div>`;tick()}
+document.querySelectorAll(".stream-tab").forEach(b=>b.addEventListener("click",()=>{active=b.dataset.tab;localStorage.setItem("life-tab",active);renderPanel()}));
+
+// 统一事件
+$("#panel").addEventListener("submit",e=>{e.preventDefault();const form=e.target.dataset.form;if(form==="city"){const name=$("#city-input").value.trim();if(name)selectCity(name)}else if(form==="task"){const text=$("#task-input").value.trim();if(text){state.tasks.unshift({id:uid(),text,done:false});store.set("liubai-tasks",state.tasks);renderPanel()}}else if(form==="habit"){const name=$("#habit-input").value.trim();if(name){state.habits.push({id:uid(),name,days:{}});store.set("liubai-habits",state.habits);renderPanel()}}else if(form==="date"){const name=$("#date-name").value.trim(),date=$("#date-value").value;if(name&&date){state.dates.push({id:uid(),name,date});store.set("liubai-countdowns",state.dates);renderPanel()}}else if(form==="link"){const name=$("#link-name").value.trim(),url=safeUrl($("#link-url").value.trim());if(name&&url){state.bookmarks.push({id:uid(),name,url});store.set("liubai-bookmarks",state.bookmarks);renderPanel()}}});
+$("#panel").addEventListener("click",e=>{const t=e.target;if(t.dataset.city){selectCity(t.dataset.city)}else if(t.hasAttribute("data-focus-toggle")){focusToggle()}else if(t.hasAttribute("data-focus-reset")){clearInterval(focus.timer);focus.running=false;focus.remaining=focus.mode*60;renderPanel()}else if(t.dataset.focusMode){clearInterval(focus.timer);focus.running=false;focus.mode=Number(t.dataset.focusMode);focus.remaining=focus.mode*60;renderPanel()}else if(t.dataset.habit){const h=state.habits.find(h=>h.id===t.dataset.habit);if(h){h.days[t.dataset.day]=!h.days[t.dataset.day];store.set("liubai-habits",state.habits);renderPanel()}}else if(t.dataset.habitDelete){state.habits=state.habits.filter(h=>h.id!==t.dataset.habitDelete);store.set("liubai-habits",state.habits);renderPanel()}else if(t.dataset.taskDelete){state.tasks=state.tasks.filter(x=>x.id!==t.dataset.taskDelete);store.set("liubai-tasks",state.tasks);renderPanel()}else if(t.dataset.dateDelete){state.dates=state.dates.filter(x=>x.id!==t.dataset.dateDelete);store.set("liubai-countdowns",state.dates);renderPanel()}else if(t.dataset.linkDelete){state.bookmarks=state.bookmarks.filter(x=>x.id!==t.dataset.linkDelete);store.set("liubai-bookmarks",state.bookmarks);renderPanel()}});
+$("#panel").addEventListener("change",e=>{const id=e.target.dataset.task;if(!id)return;const t=state.tasks.find(x=>x.id===id);if(t){t.done=e.target.checked;store.set("liubai-tasks",state.tasks);renderPanel()}});
+let noteTimer;$("#panel").addEventListener("input",e=>{if(e.target.id!=="notes")return;clearTimeout(noteTimer);$("#note-status").textContent="正在保存…";noteTimer=setTimeout(()=>{state.notes=e.target.value;store.set("liubai-notes",state.notes);$("#note-status").textContent="已自动保存"},350)});
+function tick(){const d=new Date();if($("#today-time")){$("#today-time").textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;$("#today-seconds").textContent=pad(d.getSeconds());$("#today-date").textContent=new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"}).format(d);const p=dayProgress(),hours=Math.floor(p.left/3600),mins=Math.floor(p.left%3600/60);$("#day-left").textContent=`余 ${hours} 小时 ${mins} 分`;$("#day-progress").style.width=p.pct+"%"}}
+const now=new Date(),start=new Date(now.getFullYear(),0,0);$("#issue-no").textContent=`DAY ${Math.floor((now-start)/864e5)}`;$("#issue-date").textContent=new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric"}).format(now);
+renderPanel();setInterval(tick,1000);if(state.city)loadWeather();
 </script>
 </body>
 </html>
