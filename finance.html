@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/reader.css">
 <style>
   :root{
     --paper:#f6f1e7; --paper-deep:#efe8d8;
@@ -96,10 +97,11 @@
   <div class="foot">
     <span class="host">展白 主理</span><br>
     行情：东方财富（每 15 分钟更新，非逐笔）；快讯：华尔街见闻 7×24。<br>
-    点击快讯跳转原文；行情仅供参考，以交易所为准。
+    点击快讯站内阅读；行情仅供参考，以交易所为准。
   </div>
 </main>
 
+<script src="assets/reader.js"></script>
 <script>
 const $ = (s, p = document) => p.querySelector(s);
 
@@ -138,6 +140,7 @@ function paintNews(list) {
       <div class="t">${esc(n.text.length > 140 ? n.text.slice(0, 140) + "…" : n.text)}</div>
       <div class="s">${timeAgo(n.published)}</div>
     </a>`).join("") + `</div>`;
+  ArticleReader.bind($("#content"), list);
 }
 
 async function load(manual) {

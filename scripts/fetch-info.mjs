@@ -54,6 +54,32 @@ async function safe(name, fn, errors) {
 const stripCdata = (s) =>
   String(s ?? "").replace(/^<!\[CDATA\[/, "").replace(/\]\]>$/, "").trim();
 
+/** RSS HTML → 可安全展示的纯文本段落（无需客户端跨域抓正文） */
+function decodeHtml(s) {
+  const named = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", hellip: "…", mdash: "—", ndash: "–", lsquo: "‘", rsquo: "’", ldquo: "“", rdquo: "”" };
+  return String(s ?? "").replace(/&(#x[\da-f]+|#\d+|[a-z]+);/gi, (m, code) => {
+    if (code[0] === "#") {
+      const n = code[1]?.toLowerCase() === "x" ? parseInt(code.slice(2), 16) : parseInt(code.slice(1), 10);
+      return Number.isFinite(n) ? String.fromCodePoint(n) : m;
+    }
+    return named[code.toLowerCase()] ?? m;
+  });
+}
+
+function htmlToText(html) {
+  const text = decodeHtml(html)
+    .replace(/<(script|style|noscript|svg)[\s\S]*?<\/\1>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "• ")
+    .replace(/<\/(p|div|section|article|h[1-6]|li|blockquote)>/gi, "\n")
+    .replace(/<[^>]+>/g, "");
+  return decodeHtml(text)
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .join("\n");
+}
+
 /** 通用 RSS item 解析（RSS2.0，兼容 link 元素与 link href 两种写法） */
 function parseRss(xml, source, limit) {
   const pick = (block, tag) => {
@@ -67,9 +93,11 @@ function parseRss(xml, source, limit) {
       let link = pick(block, "link");
       if (!link) link = block.match(/<link[^>]*href="([^"]+)"/i)?.[1] ?? "";
       const published = pick(block, "pubDate");
+      const text = htmlToText(pick(block, "content:encoded") || pick(block, "description"));
       return {
         title: pick(block, "title"),
-        desc: pick(block, "description").replace(/<[^>]+>/g, "").slice(0, 120),
+        desc: text.slice(0, 160),
+        content: text.slice(0, 6000),
         link,
         published: published ? new Date(published).toISOString() : null,
         source,
@@ -132,6 +160,21 @@ async function fetchAi(errors) {
     })
     .sort((a, b) => new Date(b.published ?? 0) - new Date(a.published ?? 0))
     .slice(0, AI_LIMIT);
+
+  // 量子位 RSS 常只有副标题，补抓文章正文；单篇失败不影响整批
+  await Promise.all(items.filter((n) => n.source === "量子位" && (n.content?.length ?? 0) < 500).map(async (n) => {
+    try {
+      const html = await getText(n.link);
+      const body = html.match(/<div class="content">([\s\S]*?)<div class="content_right">/);
+      const text = body ? htmlToText(body[1]) : "";
+      if (text.length > (n.content?.length ?? 0)) {
+        n.content = text.slice(0, 6000);
+        n.desc = text.slice(0, 160);
+      }
+    } catch (e) {
+      errors["qbit-article"] = String(e.message ?? e);
+    }
+  }));
   return { updatedAt: new Date().toISOString(), items };
 }
 

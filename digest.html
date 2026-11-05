@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/reader.css">
 <style>
   :root{
     --paper:#f6f1e7;--paper-deep:#efe8d8;--ink:#211d19;--ink-soft:#6f6558;
@@ -193,6 +194,7 @@
   </footer>
 </main>
 
+<script src="assets/reader.js"></script>
 <script>
 const $=(s)=>document.querySelector(s);
 const esc=(s)=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -201,6 +203,7 @@ const cls=v=>v>0?"up":v<0?"down":"flat";
 const sign=v=>v>0?"+":"";
 const fmt=n=>n==null?"—":Number(n).toLocaleString("zh-CN",{minimumFractionDigits:2,maximumFractionDigits:2});
 const state={sports:null,tech:null,ai:null,finance:null,hot:null};
+let readerItems=[];
 let active=localStorage.getItem("digest-tab")||"sports";
 const META={
   sports:{vol:"卷一 · THE GAME",title:"运动",en:"The rhythm of the game",poem:"比分会定格，赛场仍在呼吸。",mark:"赛",href:"sports.html"},
@@ -213,7 +216,13 @@ function timeAgo(iso){const s=(Date.now()-new Date(iso).getTime())/1000;if(s<360
 function dayLabel(iso){const d=new Date(iso),now=new Date(),yesterday=new Date(now-864e5),same=(a,b)=>a.toDateString()===b.toDateString();return(same(d,now)?"今天 ":same(d,yesterday)?"昨天 ":"")+dayFmt.format(d)}
 const empty=(text="暂无数据")=>`<div class="empty">${text}</div>`;
 const panelHead=()=>`<div class="panel-head"><span class="panel-kicker">本期精选</span><a class="all" href="${META[active].href}">全览 →</a></div>`;
-function newsItems(items,clamp=false,featured=false){if(!items?.length)return empty();return `<div class="items">${items.map((n,i)=>`<a class="item ${clamp?"clamp":""} ${featured&&i===0?"featured":""}" href="${esc(n.link||"#")}" target="_blank" rel="noopener"><div class="item-title">${esc(n.title||n.text)}</div><div class="item-meta">${n.source?`<span class="src">${esc(n.source)}</span> · `:""}${n.published?timeAgo(n.published):""}</div></a>`).join("")}</div>`}
+function newsItems(items,clamp=false,featured=false,internal=false){
+  if(!items?.length)return empty();
+  return `<div class="items">${items.map((n,i)=>{
+    const readerAttr=internal?` data-reader="${readerItems.push(n)-1}"`:"";
+    return `<a class="item ${clamp?"clamp":""} ${featured&&i===0?"featured":""}" href="${esc(n.link||"#")}"${readerAttr} target="_blank" rel="noopener"><div class="item-title">${esc(n.title||n.text)}</div><div class="item-meta">${n.source?`<span class="src">${esc(n.source)}</span> · `:""}${n.published?timeAgo(n.published):""}</div></a>`;
+  }).join("")}</div>`;
+}
 function matchCard(g){
   const post=g.state==="post",live=g.state==="in",pre=g.state==="pre";
   const homeWin=post&&Number(g.home?.score)>Number(g.away?.score),awayWin=post&&Number(g.away?.score)>Number(g.home?.score);
@@ -228,14 +237,14 @@ function sportsPanel(){
   const chosen=[...live.slice(0,1),...recent.slice(0,1),...upcoming.slice(0,1)].slice(0,2);
   return `<div class="group"><div class="group-label">赛事</div>${chosen.length?chosen.map(matchCard).join(""):empty("近期无赛事")}</div><div class="group"><div class="group-label">要闻</div>${newsItems((d.news||[]).slice(0,2))}</div>`;
 }
-function techPanel(){return state.tech?`<div class="group"><div class="group-label">最新</div>${newsItems((state.tech.items||[]).slice(0,4),false,true)}</div>`:empty("源暂不可用")}
+function techPanel(){return state.tech?`<div class="group"><div class="group-label">最新</div>${newsItems((state.tech.items||[]).slice(0,4),false,true,true)}</div>`:empty("源暂不可用")}
 function diverse(items,count){const per={},picked=[];for(const n of items){const used=per[n.source]||0;if(used>=2)continue;per[n.source]=used+1;picked.push(n);if(picked.length===count)break}return picked}
-function aiPanel(){return state.ai?`<div class="group"><div class="group-label">前沿</div>${newsItems(diverse(state.ai.items||[],4),false,true)}</div>`:empty("源暂不可用")}
+function aiPanel(){return state.ai?`<div class="group"><div class="group-label">前沿</div>${newsItems(diverse(state.ai.items||[],4),false,true,true)}</div>`:empty("源暂不可用")}
 function financePanel(){
   const d=state.finance;if(!d)return empty("源暂不可用");
   const wanted=["上证指数","恒生指数","纳斯达克"],quotes=wanted.map(name=>(d.indices||[]).find(i=>i.name===name)).filter(Boolean);
   const quoteHtml=quotes.length?`<div class="quotes">${quotes.map(i=>`<div class="quote"><div class="quote-name">${esc(i.name)}</div><div class="quote-price ${cls(i.change)}">${fmt(i.price)}</div><div class="quote-change ${cls(i.change)}">${sign(i.change)}${fmt(i.change)} · ${sign(i.changePct)}${fmt(i.changePct)}%</div></div>`).join("")}</div>`:empty("行情暂不可用");
-  return `<div class="group"><div class="group-label">指数</div>${quoteHtml}</div><div class="group"><div class="group-label">快讯</div>${newsItems((d.news||[]).slice(0,2).map(n=>({...n,title:n.text})),true)}</div>`;
+  return `<div class="group"><div class="group-label">指数</div>${quoteHtml}</div><div class="group"><div class="group-label">快讯</div>${newsItems((d.news||[]).slice(0,2).map(n=>({...n,title:n.text})),true,false,true)}</div>`;
 }
 function heatText(n){return n==null?"":n>=10000?(n/10000).toFixed(1).replace(/\.0$/,"")+" 万热度":n+" 热度"}
 function hotPanel(){
@@ -251,10 +260,12 @@ function renderPanel(){
   document.querySelectorAll(".stream-tab").forEach(b=>{const on=b.dataset.tab===active;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
   $("#cover-vol").textContent=m.vol;$("#cover-title").textContent=m.title;$("#cover-en").textContent=m.en;$("#cover-poem").textContent=m.poem;$("#watermark").textContent=m.mark;
   const cover=$("#cover");cover.classList.remove("swap");void cover.offsetWidth;cover.classList.add("swap");
+  readerItems=[];
   const html=active==="sports"?sportsPanel():active==="tech"?techPanel():active==="ai"?aiPanel():active==="finance"?financePanel():hotPanel();
   $("#panel").innerHTML=panelHead()+`<div class="fade">${html}</div>`;
 }
 document.querySelectorAll(".stream-tab").forEach(b=>b.addEventListener("click",()=>{active=b.dataset.tab;localStorage.setItem("digest-tab",active);renderPanel()}));
+document.addEventListener("click",(event)=>{const link=event.target.closest("[data-reader]");if(!link)return;event.preventDefault();ArticleReader.open(readerItems[Number(link.dataset.reader)])});
 async function fetchJson(path){const r=await fetch(`${path}?t=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(r.status);return r.json()}
 async function load(manual){
   const btn=$("#refresh");btn.disabled=true;btn.textContent="刷新中";
