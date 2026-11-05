@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/reader.css">
 <style>
   :root{
     --paper:#f6f1e7; --paper-deep:#efe8d8;
@@ -116,13 +117,15 @@
   <div class="foot">
     <span class="host">展白 主理</span><br>
     数据源：<a href="https://www.zhibo8.com" target="_blank" rel="noopener">直播吧</a>（赛程 · 比分 · 资讯），ESPN / BBC 备用。<br>
-    每 30 分钟经 GitHub Actions 自动抓取更新，非逐秒直播；详情以直播吧原页为准。
+    每 30 分钟经 GitHub Actions 自动抓取更新，非逐秒直播；新闻支持站内图文阅读。
   </div>
 </main>
 
+<script src="assets/reader.js"></script>
 <script>
 const $ = (s, p = document) => p.querySelector(s);
 const content = $("#content");
+let readerItems = [];
 
 /* ── 时间格式化 ── */
 const dayFmt = new Intl.DateTimeFormat("zh-CN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false });
@@ -165,11 +168,14 @@ function gameCard(g) {
 }
 
 function newsList(items) {
-  return `<div class="news fade">` + items.map((n) => `
-    <a href="${esc(n.link || "#")}" target="_blank" rel="noopener">
+  return `<div class="news fade">` + items.map((n) => {
+    const readerAttr = n.blocks?.length || n.content ? ` data-reader="${readerItems.push(n) - 1}"` : "";
+    return `
+    <a href="${esc(n.link || "#")}"${readerAttr} target="_blank" rel="noopener">
       <div class="t">${esc(n.title)}</div>
       <div class="s">${esc(n.source || "")}${n.published ? " · " + timeAgo(n.published) : ""}</div>
-    </a>`).join("") + `</div>`;
+    </a>`;
+  }).join("") + `</div>`;
 }
 
 function renderNba(d) {
@@ -226,8 +232,16 @@ document.querySelectorAll(".tab").forEach((b) => {
 });
 function paint() {
   document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
+  readerItems = [];
   content.innerHTML = data ? RENDER[tab](data[tab]) : `<div class="empty">数据加载中…</div>`;
 }
+
+document.addEventListener("click", (event) => {
+  const link = event.target.closest("[data-reader]");
+  if (!link) return;
+  event.preventDefault();
+  ArticleReader.open(readerItems[Number(link.dataset.reader)]);
+});
 
 /* ── 数据 ── */
 async function load(manual) {

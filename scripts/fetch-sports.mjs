@@ -194,6 +194,47 @@ async function zb8News(cat) {
     .slice(0, NEWS_LIMIT);
 }
 
+/** 直播吧文章 → 有序图文 blocks；正文与图片都在 #signals.content */
+async function zb8Article(url) {
+  const html = await getText(url);
+  const body = html.match(/<div id="signals" class="content">([\s\S]*?)<\/div>/)?.[1] ?? "";
+  if (!body) throw new Error("article body not found");
+  const decode = (s) => String(s ?? "")
+    .replace(/&nbsp;/g, " ").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+  const blocks = [];
+  let imageCount = 0;
+  for (const m of body.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)) {
+    const text = decode(stripTags(m[1])).replace(/\s+/g, " ").trim();
+    if (text) blocks.push({ type: "text", text });
+    for (const img of m[1].matchAll(/<img[^>]+src="([^"]+)"[^>]*>/g)) {
+      let src = img[1].startsWith("//") ? "https:" + img[1] : img[1].replace(/^http:\/\//, "https://");
+      try {
+        const u = new URL(src);
+        if (u.protocol === "https:" && imageCount < 12) {
+          blocks.push({ type: "img", src: u.href, alt: "文章配图" });
+          imageCount++;
+        }
+      } catch { /* 忽略异常图片地址 */ }
+    }
+  }
+  return { blocks, content: blocks.filter((b) => b.type === "text").map((b) => b.text).join("\n") };
+}
+
+async function enrichZb8Articles(items, cat, errors) {
+  await Promise.all(items.slice(0, 5).map(async (n) => {
+    try {
+      const article = await zb8Article(n.link);
+      if (article.blocks.length) {
+        n.blocks = article.blocks;
+        n.content = article.content;
+      }
+    } catch (e) {
+      errors[`article-${cat}`] = String(e.message ?? e);
+    }
+  }));
+}
+
 // id 缓存：首页条目随比赛结束会消失，缓存保证赛后仍可按 id 回查比分（昨夜赛果）
 const CACHE_FILE = resolve(ROOT, "data", "sports-cache.json");
 
@@ -298,6 +339,12 @@ async function zhibo8() {
     safe("zb8-news-nba", () => zb8News("nba"), newsErrors),
     safe("zb8-news-zuqiu", () => zb8News("zuqiu"), newsErrors),
     safe("zb8-news-dianjing", () => zb8News("dianjing"), newsErrors),
+  ]);
+
+  await Promise.all([
+    enrichZb8Articles(nbaNews ?? [], "nba", newsErrors),
+    enrichZb8Articles(soccerNews ?? [], "soccer", newsErrors),
+    enrichZb8Articles(esportsNews ?? [], "esports", newsErrors),
   ]);
 
   // 缓存随数据一起提交进仓库，供下一轮增量使用

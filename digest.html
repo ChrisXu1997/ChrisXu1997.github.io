@@ -235,7 +235,7 @@ function sportsPanel(){
   if(!d)return empty("源暂不可用");
   const games=d.games||[],live=games.filter(g=>g.state==="in"),recent=games.filter(g=>g.state==="post").sort((a,b)=>new Date(b.startTime)-new Date(a.startTime)),upcoming=games.filter(g=>g.state==="pre").sort((a,b)=>new Date(a.startTime)-new Date(b.startTime));
   const chosen=[...live.slice(0,1),...recent.slice(0,1),...upcoming.slice(0,1)].slice(0,2);
-  return `<div class="group"><div class="group-label">赛事</div>${chosen.length?chosen.map(matchCard).join(""):empty("近期无赛事")}</div><div class="group"><div class="group-label">要闻</div>${newsItems((d.news||[]).slice(0,2))}</div>`;
+  return `<div class="group"><div class="group-label">赛事</div>${chosen.length?chosen.map(matchCard).join(""):empty("近期无赛事")}</div><div class="group"><div class="group-label">要闻</div>${newsItems((d.news||[]).slice(0,2),false,false,true)}</div>`;
 }
 function techPanel(){return state.tech?`<div class="group"><div class="group-label">最新</div>${newsItems((state.tech.items||[]).slice(0,4),false,true,true)}</div>`:empty("源暂不可用")}
 function diverse(items,count){const per={},picked=[];for(const n of items){const used=per[n.source]||0;if(used>=2)continue;per[n.source]=used+1;picked.push(n);if(picked.length===count)break}return picked}

@@ -30,6 +30,15 @@
   const closeButton = panel.querySelector(".reader-close");
   let lastFocus = null;
 
+  function imageUrl(value) {
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+
   function open(item) {
     if (!item) return;
     lastFocus = document.activeElement;
@@ -39,7 +48,17 @@
       : "";
     meta.innerHTML = `<span class="src">${esc(item.source || "站内阅读")}</span>${date ? " · " + esc(date) : ""}`;
     const content = item.content || item.text || item.desc || "此来源仅提供标题与摘要，请通过下方原文链接继续阅读。";
-    body.innerHTML = String(content).split(/\n+/).map((line) => line.trim()).filter(Boolean).map((line) => `<p>${esc(line)}</p>`).join("");
+    if (Array.isArray(item.blocks) && item.blocks.length) {
+      body.innerHTML = item.blocks.map((block) => {
+        if (block.type === "img") {
+          const src = imageUrl(block.src);
+          return src ? `<figure class="reader-figure"><img src="${esc(src)}" alt="${esc(block.alt || "文章配图")}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.remove()"></figure>` : "";
+        }
+        return block.text ? `<p>${esc(block.text)}</p>` : "";
+      }).join("");
+    } else {
+      body.innerHTML = String(content).split(/\n+/).map((line) => line.trim()).filter(Boolean).map((line) => `<p>${esc(line)}</p>`).join("");
+    }
     if (item.link) {
       original.href = item.link;
       original.hidden = false;
