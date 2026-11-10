@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>书库 · 留白</title>
+<meta name="description" content="全部藏书一览：现代文学、经史、诗词文集与蒙学，可搜索、可继续阅读。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23b3352c'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='%23f6f1e7' font-family='serif'%3E库%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f6f1e7;--deep:#eee6d6;--ink:#211d19;--soft:#6f6558;--seal:#b3352c;--line:rgba(33,29,25,.15);--cn:"Noto Serif SC","Songti SC",serif;--en:"Cormorant Garamond",Georgia,serif}*{margin:0;padding:0;box-sizing:border-box}button,input{font:inherit}button{cursor:pointer}body{background:var(--paper);color:var(--ink);font-family:var(--cn);min-height:100vh}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.5;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.52 0 0 0 0 0.45 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}.frame{position:fixed;inset:14px;border:1px solid var(--line);pointer-events:none;z-index:4}.frame::after{content:"";position:absolute;inset:5px;border:1px solid rgba(33,29,25,.08)}
+  main{position:relative;max-width:1180px;margin:0 auto;padding:42px 5vw 70px}.masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-bottom:22px;border-bottom:1px solid var(--ink)}.brand{display:flex;align-items:baseline;gap:14px;color:var(--ink);text-decoration:none}.brand strong{font-size:21px;letter-spacing:.3em}.brand span{font-family:var(--en);font-size:13px;letter-spacing:.16em;color:var(--soft)}.mast-nav{display:flex;gap:22px}.mast-nav a{font-size:12px;letter-spacing:.18em;color:var(--soft);text-decoration:none}.mast-nav a:hover{color:var(--seal)}
+  .cover{position:relative;display:grid;grid-template-columns:1fr 300px;align-items:end;gap:44px;min-height:280px;padding:54px 0 46px;border-bottom:1px solid var(--line);overflow:hidden}.cover-main,.cover-side{position:relative;z-index:1}.cover-vol{margin-bottom:16px;font-size:11px;letter-spacing:.32em;color:var(--seal)}.cover-title{font-size:clamp(74px,10vw,116px);font-weight:900;line-height:1;letter-spacing:.12em}.cover-en{font-family:var(--en);font-style:italic;font-size:22px;color:var(--soft)}.cover-poem{margin-top:18px;font-size:14px;line-height:2.1;letter-spacing:.09em;color:var(--soft)}.watermark{position:absolute;right:0;bottom:-80px;font-family:"Ma Shan Zheng",var(--cn);font-size:310px;line-height:1;color:rgba(33,29,25,.045);pointer-events:none}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;padding:22px 0;border-bottom:1px solid var(--line)}.stat small{display:block;font-size:10px;letter-spacing:.16em;color:var(--soft)}.stat strong{display:block;margin-top:7px;font-family:var(--en);font-size:31px;font-weight:500}
+  .resume{margin-top:26px}.resume-label{font-size:10px;letter-spacing:.24em;color:var(--soft);margin-bottom:8px}.resume a{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--line);color:inherit;text-decoration:none;font-size:13px}.resume a:hover{color:var(--seal)}.resume a span{color:var(--soft);font-size:10px;white-space:nowrap}
+  .toolbar{display:flex;align-items:center;gap:18px;margin:34px 0 22px;flex-wrap:wrap}.toolbar input{flex:1;min-width:220px;border:0;border-bottom:1px solid var(--line);background:none;padding:11px 2px;color:var(--ink);outline:none;font-size:14px}.toolbar input:focus{border-color:var(--seal)}.fav-toggle{border:0;background:none;color:var(--soft);font-size:12px;letter-spacing:.1em;padding:4px 0;white-space:nowrap}.fav-toggle.on{color:var(--seal);border-bottom:1px solid var(--seal)}
+  .filters{display:flex;gap:24px;margin-bottom:24px;flex-wrap:wrap}.filters button{border:0;background:none;color:var(--soft);font-size:13px;letter-spacing:.14em;padding:4px 0}.filters button.on{color:var(--seal);border-bottom:1px solid var(--seal)}
+  .book-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:30px 26px}.book-card{min-width:0;display:flex;flex-direction:column}.book-cover{position:relative;width:100%;aspect-ratio:2/3;overflow:hidden;background:var(--deep);box-shadow:8px 10px 24px rgba(33,29,25,.12);transition:transform .35s,box-shadow .35s}.book-card:hover .book-cover{transform:translateY(-5px) rotate(-1deg);box-shadow:10px 16px 30px rgba(33,29,25,.17)}.generated-cover{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:17px 14px;color:var(--cover-ink,#f6f1e7);background:var(--cover-bg,#6f6558)}.generated-cover::before{content:"";position:absolute;left:7px;top:0;bottom:0;width:1px;background:currentColor;opacity:.28}.generated-cover .mark{font-family:var(--en);font-style:italic;font-size:11px;opacity:.65}.generated-cover .btitle{font-size:16px;font-weight:600;line-height:1.6;letter-spacing:.08em;writing-mode:vertical-rl;max-height:76%;align-self:flex-end}.generated-cover .bauthor{font-size:10px;letter-spacing:.12em;opacity:.75}
+  .card-meta{padding-top:13px;flex:1;display:flex;flex-direction:column}.card-meta h3{font-size:15px;font-weight:600;line-height:1.6;overflow-wrap:anywhere}.card-meta .author{margin-top:3px;font-size:11px;color:var(--soft)}.card-meta .desc{margin-top:7px;font-size:11px;line-height:1.8;color:var(--soft);flex:1}.card-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}.card-actions a{color:var(--seal);font-size:11px;letter-spacing:.12em;text-decoration:none;white-space:nowrap}.card-actions a:hover{text-decoration:underline;text-underline-offset:4px}.fav-btn{border:0;background:none;color:var(--soft);font-size:11px;padding:0;white-space:nowrap}.fav-btn.on{color:var(--seal)}.progress-pill{margin-top:9px;height:1px;background:var(--line)}.progress-pill i{display:block;height:1px;background:var(--seal)}.progress-text{margin-top:6px;font-family:var(--en);font-size:11px;color:var(--soft)}
+  .empty{padding:48px 0;text-align:center;color:var(--soft);font-size:13px;letter-spacing:.18em}.loading{padding:48px 0;text-align:center;color:var(--soft);font-size:13px;letter-spacing:.16em}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:52px;padding-top:24px;border-top:1px solid var(--line);font-size:11px;line-height:2;letter-spacing:.1em;color:var(--soft)}.host{font-family:"Ma Shan Zheng",var(--cn);color:var(--seal);font-size:15px}
+  .fade{animation:fade .45s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media(max-width:1000px){.book-grid{grid-template-columns:repeat(4,1fr)}.cover{grid-template-columns:1fr 260px;gap:30px}}@media(max-width:760px){.masthead{flex-wrap:wrap}.cover{grid-template-columns:1fr;gap:22px;min-height:0;padding:42px 0}.watermark{font-size:220px;bottom:-44px}.stats{grid-template-columns:repeat(2,1fr);gap:18px}.book-grid{grid-template-columns:repeat(3,1fr)}.toolbar{gap:12px}}@media(max-width:520px){.frame{inset:8px}main{padding:30px 6vw 56px}.brand span{display:none}.book-grid{grid-template-columns:repeat(2,1fr);gap:24px 16px}.generated-cover{padding:12px 10px}.generated-cover .btitle{font-size:13px}.mast-nav{gap:14px}}
+</style>
+</head>
+<body>
+<div class="frame" aria-hidden="true"></div>
+<main>
+  <header class="masthead">
+    <a class="brand" href="index.html"><strong>留白</strong><span>THE LIBRARY</span></a>
+    <nav class="mast-nav"><a href="library.html">书房 ↗</a><a href="index.html">首页 ↗</a></nav>
+  </header>
+  <section class="cover">
+    <div class="cover-main"><div class="cover-vol">全部藏书 · THE COLLECTION</div><h1 class="cover-title">书库</h1></div>
+    <div class="cover-side"><div class="cover-en">All books, one shelf</div><p class="cover-poem">所有能读的书都在这里。挑一本，慢慢读。</p></div>
+    <span class="watermark">库</span>
+  </section>
+  <div class="stats" id="stats"></div>
+  <div class="resume" id="resume" hidden></div>
+  <div class="toolbar">
+    <input id="book-search" placeholder="搜索书名、作者或正文，如：鲁迅、关关雎鸠">
+    <button class="fav-toggle" id="fav-toggle" type="button">只看收藏</button>
+  </div>
+  <div class="filters" id="filters">
+    <button class="on" data-cat="all">全部</button>
+    <button data-cat="modern">现代文学</button>
+    <button data-cat="classics">经史</button>
+    <button data-cat="poetry">诗词文集</button>
+    <button data-cat="primer">蒙学</button>
+  </div>
+  <div class="book-grid" id="book-grid"><div class="loading">正在整理书架…</div></div>
+  <footer class="foot"><span><span class="host">展白 主理</span> · 公版书库，仅作个人阅读</span><span>阅读进度与收藏仅保存在当前浏览器</span></footer>
+</main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}},set(k,v){localStorage.setItem(k,JSON.stringify(v))}};
+const CATS={nahan:"modern",panghuang:"modern",gushixinbian:"modern",zhaohuaxishi:"modern",yecao:"modern",lunyu:"classics",mengzi:"classics",daxue:"classics",zhongyong:"classics",shijing:"poetry",tang300:"poetry",guwen:"poetry",qianziwen:"primer",sanzijing:"primer",zhuzi:"primer",zengguang:"primer"};
+const CAT_NAMES={modern:"现代文学",classics:"经史",poetry:"诗词文集",primer:"蒙学"};
+const PALETTES=[["#53645b","#f6f1e7"],["#9a5847","#f6f1e7"],["#b49a6a","#211d19"],["#596575","#f6f1e7"],["#7d6958","#f6f1e7"],["#34302b","#f6f1e7"]];
+let catalog=null,query="",cat="all",onlyFav=false;
+let favorites=store.get("liubai-favorite-books",[]),progress=store.get("liubai-book-progress",{}),readingHistory=store.get("liubai-reading-history",[]);
+const hash=s=>[...String(s)].reduce((n,c)=>(n*31+c.codePointAt(0))>>>0,7);
+function cover(b){const p=PALETTES[hash(b.title)%PALETTES.length];return `<div class="book-cover"><div class="generated-cover" style="--cover-bg:${p[0]};--cover-ink:${p[1]}"><span class="mark">LIUBAI</span><span class="btitle">${esc(b.title)}</span><span class="bauthor">${esc(b.era||"")}</span></div></div>`}
+function bookPercent(b){const p=progress[b.id];if(!p)return 0;return Math.min(100,Math.round(((p.chapter+(p.scroll||0))/b.chapters.length)*100))}
+function renderStats(){const chapters=catalog.books.reduce((n,b)=>n+b.chapters.length,0),started=Object.keys(progress).filter(id=>catalog.books.some(b=>b.id===id)).length;$("#stats").innerHTML=[[catalog.books.length,"藏书"],[chapters,"章节"],[started,"翻阅过"],[favorites.length,"收藏"]].map(([v,l])=>`<div class="stat"><small>${l}</small><strong>${v}</strong></div>`).join("")}
+function renderResume(){const latest=readingHistory.slice(0,3);$("#resume").hidden=!latest.length;if(!latest.length)return;$("#resume").innerHTML=`<div class="resume-label">最近阅读 · 继续上次</div>${latest.map(h=>`<a href="reader.html?book=${h.bookId}&chapter=${h.chapterIndex}"><strong>${esc(h.bookTitle)} · ${esc(h.chapterTitle)}</strong><span>${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(h.openedAt))}</span></a>`).join("")}`}
+function renderBooks(){const q=query.trim().toLowerCase(),list=catalog.books.filter(b=>(cat==="all"||CATS[b.id]===cat)&&(!onlyFav||favorites.includes(b.id))&&(!q||`${b.title}${b.author}${b.description}${b.chapters.map(c=>c.title+c.paragraphs.join(" ")).join(" ")}`.toLowerCase().includes(q)));
+$("#book-grid").innerHTML=list.length?list.map(b=>{const pct=bookPercent(b),p=progress[b.id];return `<article class="book-card fade"><a href="reader.html?book=${b.id}">${cover(b)}</a><div class="card-meta"><h3>${esc(b.title)}</h3><span class="author">${esc(b.author)} · ${b.chapters.length} 章</span><span class="desc">${esc(b.description)}</span><div class="progress-pill"><i style="width:${pct}%"></i></div><span class="progress-text">${p?`已读 ${pct}% · ${CAT_NAMES[CATS[b.id]]||""}`:CAT_NAMES[CATS[b.id]]||""}</span><div class="card-actions"><a href="reader.html?book=${b.id}${p?`&chapter=${p.chapter}`:""}">${p?"继续阅读":"开始阅读"} →</a><button class="fav-btn ${favorites.includes(b.id)?"on":""}" data-fav="${b.id}">${favorites.includes(b.id)?"已收藏":"收藏"}</button></div></div></article>`}).join(""):`<div class="empty">${onlyFav?"还没有收藏，点书卡上的「收藏」即可。":"没有找到相关书籍或正文。"}</div>`}
+$("#book-search").addEventListener("input",e=>{query=e.target.value;renderBooks()});
+$("#fav-toggle").addEventListener("click",()=>{onlyFav=!onlyFav;$("#fav-toggle").classList.toggle("on",onlyFav);$("#fav-toggle").textContent=onlyFav?"查看全部":"只看收藏";renderBooks()});
+$("#filters").addEventListener("click",e=>{if(!e.target.dataset.cat)return;cat=e.target.dataset.cat;document.querySelectorAll("#filters button").forEach(b=>b.classList.toggle("on",b===e.target));renderBooks()});
+$("#book-grid").addEventListener("click",e=>{const id=e.target.dataset.fav;if(!id)return;favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];store.set("liubai-favorite-books",favorites);renderStats();renderBooks()});
+(async()=>{try{const r=await fetch("data/library-catalog.json",{cache:"no-store"});if(!r.ok)throw new Error(r.status);catalog=await r.json();renderStats();renderResume();renderBooks()}catch{$("#book-grid").innerHTML=`<div class="empty">书库暂时无法载入，请稍后刷新。</div>`}})();
+</script>
+</body>
+</html>
